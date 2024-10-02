@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace backEnd.Entidades
 {
-    public class ResInsertarUsuario : ResBase
+    public class ReqEscanearCodigo
     {
+        public CodigoBarras codigoBarras { get; set; }
     }
 }

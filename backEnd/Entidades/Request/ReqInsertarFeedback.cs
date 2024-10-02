@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace backEnd.Entidades
 {
-    public class ResInsertarUsuario : ResBase
+    public class ReqInsertarFeedback
     {
+        public Feedback feedback { get; set; }
     }
 }
