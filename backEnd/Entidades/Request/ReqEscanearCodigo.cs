@@ -8,6 +8,6 @@ namespace backEnd.Entidades
 {
     public class ReqEscanearCodigo
     {
-        public CodigoBarras codigoBarras { get; set; }
+        public string Codigo_Barras { get; set; }
     }
 }
