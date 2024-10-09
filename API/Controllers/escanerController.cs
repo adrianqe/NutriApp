@@ -69,7 +69,7 @@ namespace API.Controllers
 
 
 
-            /*
+            //Este deberia funcionar en caso de que el otro se caiga
             //Post api/values
             [System.Web.Http.HttpPost]
             [System.Web.Http.Route("api/escanear/producto")]
@@ -77,7 +77,7 @@ namespace API.Controllers
             {
                 return new LogCodigoBarras().escanear(req);
             }
-            */
+            
         }
     }
 }
