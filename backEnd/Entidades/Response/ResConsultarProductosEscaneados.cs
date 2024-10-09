@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace backEnd.Entidades.Response
+namespace backEnd.Entidades
 {
     public class ResConsultarProductosEscaneados : ResBase
     {
-        public List<Producto> ProductosEscaneados { get; set; } 
+        public List<Producto> ProductosEscaneados = new List<Producto>();
     }
 }
