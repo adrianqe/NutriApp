@@ -1,6 +1,5 @@
 ﻿using backEnd.DataAccess;
 using backEnd.Entidades;
-using backEnd.Entidades.;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,38 +10,38 @@ namespace backEnd.Logica
 {
     public class LogCodigoBarras
     {
-        public ResEscanearCodigo escanear(ReqEscanearCodigo req)
+        public ResEscanearCodigo escanear(CodigoBarras producto)
         {
             ResEscanearCodigo res = new ResEscanearCodigo();
 
             try
             {
-                if (req == null)
+                if (producto == null)
                 {
                     res.exito = false;
-                    res.mensaje.Add("Peticion nula");
+                    res.mensaje.Add("El producto es nulo");
                 }
-                else if (string.IsNullOrEmpty(req.codigoBarras.Codigo_Barras))
+                else if (string.IsNullOrEmpty(producto.Codigo_Barras))
                 {
                     res.exito = false;
-                    res.mensaje.Add("Codigo de barras vacío");
+                    res.mensaje.Add("Código de barras vacío");
                 }
-                else if (string.IsNullOrEmpty(req.codigoBarras.Nombre))
+                else if (string.IsNullOrEmpty(producto.Nombre))
                 {
                     res.exito = false;
                     res.mensaje.Add("Nombre vacío");
                 }
-                else if (string.IsNullOrEmpty(req.codigoBarras.Marca))
+                else if (string.IsNullOrEmpty(producto.Marca))
                 {
                     res.exito = false;
                     res.mensaje.Add("Marca vacía");
                 }
-                else if (string.IsNullOrEmpty(req.codigoBarras.Categoria))
+                else if (string.IsNullOrEmpty(producto.Categoria))
                 {
                     res.exito = false;
-                    res.mensaje.Add("Categoria vacía");
+                    res.mensaje.Add("Categoría vacía");
                 }
-                else if (string.IsNullOrEmpty(req.codigoBarras.Informacion_Nutricional))
+                else if (string.IsNullOrEmpty(producto.Informacion_Nutricional))
                 {
                     res.exito = false;
                     res.mensaje.Add("Información nutricional vacía");
@@ -53,11 +52,11 @@ namespace backEnd.Logica
                     string mensaje = "";
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Escanear_Codigo(
-                        req.codigoBarras.Codigo_Barras,
-                        req.codigoBarras.Nombre,
-                        req.codigoBarras.Categoria,
-                        req.codigoBarras.Marca,
-                        req.codigoBarras.Informacion_Nutricional,
+                        producto.Codigo_Barras,
+                        producto.Nombre,
+                        producto.Categoria,
+                        producto.Marca,
+                        producto.Informacion_Nutricional,
                         ref exito,
                         ref mensaje
                     );
