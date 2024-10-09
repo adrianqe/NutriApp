@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace backEnd.Entidades.Request
+namespace backEnd.Entidades
 {
     public class ReqEliminarProducto
     {

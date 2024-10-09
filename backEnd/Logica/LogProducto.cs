@@ -131,48 +131,49 @@ namespace backEnd.Logica
 
         public ResConsultarProductosEscaneados consultar(ReqConsultarProductosEscaneados req)
         {
+            //objeto ResObtenerPublicaciones donde esta la lista
             ResConsultarProductosEscaneados res = new ResConsultarProductosEscaneados();
-            res.ProductosEscaneados = new List<Producto>();
+
+            //se inicializan las variables de referencia que pide el SP
+            bool? exito = false;
+            string mensaje = "";
 
             try
             {
-               
-                if (req == null)
-                {
-                    res.exito = false;
-                    res.mensaje.Add("El request no puede ser nulo");
-                }
-                else if (req.Usuario_ID <= 0)
-                {
-                    res.exito = false;
-                    res.mensaje.Add("El ID del usuario no puede ser menor o igual a cero");
-                }
-                else
-                {
-                    bool? exito = false;
-                    string mensaje = "";
+                //conexion al linq
+                ConectionDataContext miLinq = new ConectionDataContext();
+                //se adaptada al formato del
+                //lenguaje de programacion, usando el nombre del procedimiento+Result
+                //obtiene la los datos devueltos por la BD
+                //en este caso se usa "toList()" para traer una lista
+                List<SP_Consultar_Productos_EscaneadosResult> productos = miLinq.SP_Consultar_Productos_Escaneados(req.Usuario_ID, ref exito, ref mensaje).ToList();
 
-                    
-                    ConectionDataContext miLinq = new ConectionDataContext();
-                    
-                    if (exito == true)
-                    {
-                        res.exito = true;
-                    }
-                    else
-                    {
-                        res.exito = false;
-                        res.mensaje.Add(mensaje);  
-                    }
+                //se pasa por cada una de las entradas de la lista y 
+                //se genera el objeto Producto que se pondra en la lista
+                //antes mencionada en la linea 81
+                foreach (SP_Consultar_Productos_EscaneadosResult unProducto in productos)
+                {
+                    res.ProductosEscaneados.Add(this.factoriaProducto(unProducto));
                 }
+                //Si nada fallo se pone exito en true
+                res.exito = true;
             }
             catch (Exception ex)
             {
+                //Si dios nos abandono se pone el resultado en false
                 res.exito = false;
-                res.mensaje.Add(ex.Message);  
+                res.mensaje.Add(ex.Message);
             }
 
             return res;
+        }
+
+        private Producto factoriaProducto(SP_Consultar_Productos_EscaneadosResult productosLinq)
+        {
+            Producto productoFabricado = new Producto();
+            productoFabricado.Nombre = productosLinq.Nombre;
+            productoFabricado.Fecha_Escaneo = productosLinq.Fecha_Escaneo;
+            return productoFabricado;
         }
     }
 }

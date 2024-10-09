@@ -27,6 +27,26 @@ namespace backEnd.Logica
                     res.exito = false;
                     res.mensaje.Add("Codigo de barras vacío");
                 }
+                else if (string.IsNullOrEmpty(req.codigoBarras.Nombre))
+                {
+                    res.exito = false;
+                    res.mensaje.Add("Nombre vacío");
+                }
+                else if (string.IsNullOrEmpty(req.codigoBarras.Marca))
+                {
+                    res.exito = false;
+                    res.mensaje.Add("Marca vacía");
+                }
+                else if (string.IsNullOrEmpty(req.codigoBarras.Categoria))
+                {
+                    res.exito = false;
+                    res.mensaje.Add("Categoria vacía");
+                }
+                else if (string.IsNullOrEmpty(req.codigoBarras.Informacion_Nutricional))
+                {
+                    res.exito = false;
+                    res.mensaje.Add("Información nutricional vacía");
+                }
                 else
                 {
                     bool? exito = false;
@@ -34,6 +54,10 @@ namespace backEnd.Logica
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Escanear_Codigo(
                         req.codigoBarras.Codigo_Barras,
+                        req.codigoBarras.Nombre,
+                        req.codigoBarras.Categoria,
+                        req.codigoBarras.Marca,
+                        req.codigoBarras.Informacion_Nutricional,
                         ref exito,
                         ref mensaje
                     );

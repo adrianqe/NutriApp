@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace backEnd.Entidades.Responce
+namespace backEnd.Entidades
 {
     public class ResEliminarProducto : ResBase
     {
