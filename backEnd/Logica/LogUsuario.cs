@@ -17,7 +17,7 @@ namespace backEnd.Logica
 
             try
             {
-                //Validar que el request no sea nulo
+                
                 if (req == null)
                 {
                     res.exito = false;
@@ -40,21 +40,21 @@ namespace backEnd.Logica
                 }
                 else
                 {
-                    // Variables de salida del SP
+                  
                     bool? exito = false;
                     string mensaje = "";
 
-                    // Crear el contexto de conexión y llamar al SP
+                    
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Registrar_Nuevo_Usuario(
                         req.usuario.Nombre,
                         req.usuario.Email,
-                        req.usuario.Password,  // Esto debería ser el hash ya procesado
-                        ref exito,  // Aquí se pasa por referencia
-                        ref mensaje // Mensaje de salida del SP
+                        req.usuario.Password, 
+                        ref exito, 
+                        ref mensaje 
                     );
 
-                    // Evaluar el resultado del SP
+                    
                     if (exito == true)
                     {
                         res.exito = true;
@@ -62,15 +62,14 @@ namespace backEnd.Logica
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add(mensaje);  // Aquí se agrega el mensaje devuelto por el SP
+                        res.mensaje.Add(mensaje);
                     }
                 }
             }
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message);  // En caso de que ocurra un error en la lógica
-            }
+                res.mensaje.Add(ex.Message);  
 
             return res;
         }
@@ -208,6 +207,59 @@ namespace backEnd.Logica
 
             return res;
         }
+        public ResObtenerUsuarios obtener()
+        {
+            ResObtenerUsuarios res = new ResObtenerUsuarios();
+            res.usuarios = new List<Usuario>(); // Inicializamos la lista de usuarios
+            res.mensaje = new List<string>();   // Inicializamos la lista de mensajes
+
+            try
+            {
+                // Crear el contexto de conexión
+                ConectionDataContext miLinq = new ConectionDataContext();
+
+                // Llamar al SP que obtiene los usuarios
+                List<SP_Obtener_UsuariosResult> usuariosBD = miLinq.SP_Obtener_Usuarios().ToList();
+
+                // Transformar el resultado del SP en objetos Usuario
+                foreach (var usuarioBD in usuariosBD)
+                {
+                    Usuario usuario = new Usuario
+                    {
+                        Usuario_ID = usuarioBD.Usuario_ID,
+                        Nombre = usuarioBD.Nombre,
+                        Email = usuarioBD.Email,
+                        FechaCreacion = usuarioBD.FechaCreacion // Asegúrate que esta propiedad esté en la BD
+                    };
+                    res.usuarios.Add(usuario);
+                }
+
+                res.exito = true;  // Si se ejecuta correctamente, marcamos como éxito
+            }
+            catch (Exception ex)
+            {
+                res.exito = false;
+                res.mensaje.Add(ex.Message);  // En caso de error, se agrega el mensaje de excepción
+            }
+
+            return res;
+        }
+        private Usuario factoriaUsuario(SP_Obtener_UsuariosResult usuarioBD)
+        {
+            
+            Usuario usuario = new Usuario
+            {
+                Usuario_ID = usuarioBD.Usuario_ID,
+                Nombre = usuarioBD.Nombre,
+                Email = usuarioBD.Email,
+                FechaCreacion = usuarioBD.FechaCreacion 
+            };
+
+            return usuario;
+        }
+
+    }
+}
 
     }
 }
