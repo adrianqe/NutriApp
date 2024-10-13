@@ -19,7 +19,7 @@ namespace backEnd.Logica
                 if (producto == null)
                 {
                     res.exito = false;
-                    res.mensaje.Add("El producto es nulo");
+                    res.mensaje.Add("Request nulo");
                 }
                 else if (string.IsNullOrEmpty(producto.Codigo_Barras))
                 {
@@ -31,27 +31,15 @@ namespace backEnd.Logica
                     res.exito = false;
                     res.mensaje.Add("Nombre vacío");
                 }
-                else if (string.IsNullOrEmpty(producto.Marca))
-                {
-                    res.exito = false;
-                    res.mensaje.Add("Marca vacía");
-                }
-                else if (string.IsNullOrEmpty(producto.Categoria))
-                {
-                    res.exito = false;
-                    res.mensaje.Add("Categoría vacía");
-                }
-                else if (string.IsNullOrEmpty(producto.Informacion_Nutricional))
-                {
-                    res.exito = false;
-                    res.mensaje.Add("Información nutricional vacía");
-                }
                 else
                 {
+                    // Se insertan los datos obtenidos en la base de datos y se obtienen los resultados
                     bool? exito = false;
                     string mensaje = "";
                     ConectionDataContext miLinq = new ConectionDataContext();
-                    miLinq.SP_Escanear_Codigo(
+
+                    // Ejecutar el procedimiento almacenado y capturar los resultados
+                    var productoEscaneado = miLinq.SP_Escanear_Codigo(
                         producto.Codigo_Barras,
                         producto.Nombre,
                         producto.Categoria,
@@ -59,27 +47,45 @@ namespace backEnd.Logica
                         producto.Informacion_Nutricional,
                         ref exito,
                         ref mensaje
-                    );
+                    ).ToList(); // No uses ToString() aquí
 
-                    // Evaluar el resultado del SP
-                    if (exito == true)
+                    // Validar si el producto fue insertado o ya existía
+                    if (exito == true && productoEscaneado.Any())
                     {
                         res.exito = true;
+
+                        // Mapear el resultado a la respuesta
+                        foreach (SP_Escanear_CodigoResult unProductoEscaneado in productoEscaneado)
+                        {
+                            res.codigoBarras.Add(factoriaCodigoBarras(unProductoEscaneado));
+                        }
                     }
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add(mensaje);  // Aquí se agrega el mensaje devuelto por el SP
+                        res.mensaje.Add(mensaje); // Mensaje devuelto por el SP
                     }
                 }
             }
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message);  // En caso de que ocurra un error en la lógica
+                res.mensaje.Add(ex.Message);  // Capturar cualquier excepción en la lógica
             }
 
             return res;
+        }
+
+        // Método para mapear el resultado del SP a la entidad CodigoBarras
+        private CodigoBarras factoriaCodigoBarras(SP_Escanear_CodigoResult productoLinq)
+        {
+            CodigoBarras productoFabricado = new CodigoBarras();
+            productoFabricado.Codigo_Barras = productoLinq.Codigo_Barras;
+            productoFabricado.Nombre = productoLinq.Nombre;
+            productoFabricado.Categoria = productoLinq.Categoria;
+            productoFabricado.Marca = productoLinq.Marca;
+            productoFabricado.Informacion_Nutricional = productoLinq.Informacion_Nutricional;
+            return productoFabricado;
         }
     }
 }
