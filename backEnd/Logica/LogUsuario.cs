@@ -210,18 +210,18 @@ namespace backEnd.Logica
         public ResObtenerUsuarios obtener()
         {
             ResObtenerUsuarios res = new ResObtenerUsuarios();
-            res.usuarios = new List<Usuario>(); // Inicializamos la lista de usuarios
-            res.mensaje = new List<string>();   // Inicializamos la lista de mensajes
+            res.usuarios = new List<Usuario>(); 
+            res.mensaje = new List<string>();  
 
             try
             {
-                // Crear el contexto de conexión
+               
                 ConectionDataContext miLinq = new ConectionDataContext();
 
-                // Llamar al SP que obtiene los usuarios
+               
                 List<SP_Obtener_UsuariosResult> usuariosBD = miLinq.SP_Obtener_Usuarios().ToList();
 
-                // Transformar el resultado del SP en objetos Usuario
+              
                 foreach (var usuarioBD in usuariosBD)
                 {
                     Usuario usuario = new Usuario
@@ -229,17 +229,17 @@ namespace backEnd.Logica
                         Usuario_ID = usuarioBD.Usuario_ID,
                         Nombre = usuarioBD.Nombre,
                         Email = usuarioBD.Email,
-                        FechaCreacion = usuarioBD.FechaCreacion // Asegúrate que esta propiedad esté en la BD
+                        FechaCreacion = usuarioBD.FechaCreacion
                     };
                     res.usuarios.Add(usuario);
                 }
 
-                res.exito = true;  // Si se ejecuta correctamente, marcamos como éxito
+                res.exito = true;  
             }
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message);  // En caso de error, se agrega el mensaje de excepción
+                res.mensaje.Add(ex.Message); 
             }
 
             return res;
