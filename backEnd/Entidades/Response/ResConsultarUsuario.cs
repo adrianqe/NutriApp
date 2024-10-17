@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace backEnd.Entidades
 {
-    public class ReqEliminarProducto
+    public class ResConsultarUsuario : ResBase
     {
-        public int? Producto_ID { get; set; }
+        public List<Usuario> Usuarios { get; set; } = new List<Usuario>();
     }
 }

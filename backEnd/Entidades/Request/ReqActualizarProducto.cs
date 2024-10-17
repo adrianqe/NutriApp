@@ -8,6 +8,10 @@ namespace backEnd.Entidades
 {
     public class ReqActualizarProducto
     {
-        public Producto producto { get; set; }
+        public int? Producto_ID { get; set; }
+        public string Nombre { get; set; }
+        public string Categoria { get; set; }
+        public string Marca { get; set; }
+        public string Informacion_Nutricional { get; set; }
     }
 }

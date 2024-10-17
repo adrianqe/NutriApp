@@ -8,6 +8,6 @@ namespace backEnd.Entidades
 {
     public class ReqEliminarUsuario
     {
-        public Usuario usuario { get; set; }
+        public int? Usuario_ID { get; set; }
     }
 }

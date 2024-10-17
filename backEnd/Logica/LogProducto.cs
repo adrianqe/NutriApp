@@ -23,22 +23,22 @@ namespace backEnd.Logica
                     res.exito = false;
                     res.mensaje.Add("El request no puede ser nulo");
                 }
-                else if (req.producto == null)
+                else if (req == null)
                 {
                     res.exito = false;
                     res.mensaje.Add("El producto no puede ser nulo");
                 }
-                else if (req.producto.Producto_ID <= 0)
+                else if (req.Producto_ID <= 0)
                 {
                     res.exito = false;
                     res.mensaje.Add("El ID del producto no puede ser menor o igual a cero");
                 }
-                else if (string.IsNullOrEmpty(req.producto.Nombre))
+                else if (string.IsNullOrEmpty(req.Nombre))
                 {
                     res.exito = false;
                     res.mensaje.Add("El nombre del producto no puede ser nulo o vacío");
                 }
-            
+
                 else
                 {
                     bool? exito = false;
@@ -46,11 +46,11 @@ namespace backEnd.Logica
 
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Actualizar_Producto(
-                        req.producto.Producto_ID,
-                        req.producto.Nombre,
-                        req.producto.Categoria,
-                        req.producto.Marca,
-                        req.producto.Informacion_Nutricional,
+                        req.Producto_ID,
+                        req.Nombre,
+                        req.Categoria,
+                        req.Marca,
+                        req.Informacion_Nutricional,
                         ref exito,
                         ref mensaje
                     );
@@ -62,14 +62,14 @@ namespace backEnd.Logica
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add(mensaje);  
+                        res.mensaje.Add(mensaje);
                     }
                 }
             }
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message); 
+                res.mensaje.Add(ex.Message);
             }
 
             return res;
@@ -86,12 +86,12 @@ namespace backEnd.Logica
                     res.exito = false;
                     res.mensaje.Add("El request no puede ser nulo");
                 }
-                else if (req.producto == null)
+                else if (req == null)
                 {
                     res.exito = false;
-                    res.mensaje.Add("El producto no puede ser nulo");
+                    res.mensaje.Add("El request no puede ser nulo");
                 }
-                else if (req.producto.Producto_ID <= 0)
+                else if (req.Producto_ID <= 0)
                 {
                     res.exito = false;
                     res.mensaje.Add("El ID del producto no puede ser menor o igual a cero");
@@ -101,10 +101,10 @@ namespace backEnd.Logica
                     bool? exito = false;
                     string mensaje = "";
 
-                 
+
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Eliminar_Producto(
-                        req.producto.Producto_ID,
+                        req.Producto_ID,
                         ref exito,
                         ref mensaje
                     );
@@ -116,14 +116,14 @@ namespace backEnd.Logica
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add(mensaje); 
+                        res.mensaje.Add(mensaje);
                     }
                 }
             }
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message);  
+                res.mensaje.Add(ex.Message);
             }
 
             return res;

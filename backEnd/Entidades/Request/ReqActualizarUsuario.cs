@@ -8,6 +8,9 @@ namespace backEnd.Entidades
 {
     public class ReqActualizarUsuario
     {
-        public Usuario usuario { get; set; }
+        public int? Usuario_ID { get; set; }
+        public string Nombre { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }
