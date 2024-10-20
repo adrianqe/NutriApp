@@ -3,16 +3,57 @@ using backEnd.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace backEnd.Logica
 {
     public class LogCodigoBarras
     {
-        public ResEscanearCodigo escanear(CodigoBarras producto)
+        private static readonly HttpClient client = new HttpClient();
+
+        // Este método se encarga de hacer la solicitud a OpenFoodFacts y obtener los datos del producto
+        public async Task<CodigoBarras> ObtenerProductoDeOpenFoodFacts(string codigoBarras)
+        {
+            try
+            {
+                string url = $"https://world.openfoodfacts.org/api/v0/product/{codigoBarras}.json";
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var productData = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+
+                if (productData != null && productData.status == 1)
+                {
+                    CodigoBarras producto = new CodigoBarras
+                    {
+                        Codigo_Barras = codigoBarras,
+                        Nombre = productData.product.product_name != null ? productData.product.product_name.ToString() : "",
+                        Categoria = productData.product.categories != null ? productData.product.categories.ToString() : "",
+                        Marca = productData.product.brands != null ? productData.product.brands.ToString() : "",
+                        Informacion_Nutricional = productData.product.nutriments != null ? JsonConvert.SerializeObject(productData.product.nutriments) : ""
+                    };
+
+                    return producto;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<ResEscanearCodigo> escanear(ReqEscanearCodigo req)
         {
             ResEscanearCodigo res = new ResEscanearCodigo();
+            CodigoBarras producto = null;
+
+            producto = await ObtenerProductoDeOpenFoodFacts(req.Codigo_Barras);
 
             try
             {
@@ -87,5 +128,6 @@ namespace backEnd.Logica
             productoFabricado.Informacion_Nutricional = productoLinq.Informacion_Nutricional;
             return productoFabricado;
         }
+
     }
 }
