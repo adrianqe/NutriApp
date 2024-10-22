@@ -13,5 +13,6 @@ namespace backEnd.Entidades
         public string Categoria { get; set; }
         public string Marca { get; set; }
         public string Informacion_Nutricional { get; set; }
+        public int? nutri_score { get; set; }
     }
 }

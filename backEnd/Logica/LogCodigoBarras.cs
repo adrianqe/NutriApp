@@ -1,10 +1,8 @@
 ﻿using backEnd.DataAccess;
 using backEnd.Entidades;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -12,41 +10,7 @@ namespace backEnd.Logica
 {
     public class LogCodigoBarras
     {
-        private static readonly HttpClient client = new HttpClient();
-
-        // Este método se encarga de hacer la solicitud a OpenFoodFacts y obtener los datos del producto
-        public async Task<CodigoBarras> ObtenerProductoDeOpenFoodFacts(string codigoBarras)
-        {
-            try
-            {
-                string url = $"https://world.openfoodfacts.org/api/v0/product/{codigoBarras}.json";
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var productData = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
-
-                if (productData != null && productData.status == 1)
-                {
-                    CodigoBarras producto = new CodigoBarras
-                    {
-                        Codigo_Barras = codigoBarras,
-                        Nombre = productData.product.product_name != null ? productData.product.product_name.ToString() : "",
-                        Categoria = productData.product.categories != null ? productData.product.categories.ToString() : "",
-                        Marca = productData.product.brands != null ? productData.product.brands.ToString() : "",
-                        Informacion_Nutricional = productData.product.nutriments != null ? JsonConvert.SerializeObject(productData.product.nutriments) : ""
-                    };
-
-                    return producto;
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-        }
+        private static readonly HttpClient client = new HttpClient(); // Se crea un cliente HTTP para hacer las solicitudes a OpenFoodFacts
 
         public async Task<ResEscanearCodigo> escanear(ReqEscanearCodigo req)
         {
@@ -86,6 +50,7 @@ namespace backEnd.Logica
                         producto.Categoria,
                         producto.Marca,
                         producto.Informacion_Nutricional,
+                        producto.nutri_score,
                         ref exito,
                         ref mensaje
                     ).ToList(); // No uses ToString() aquí
@@ -126,7 +91,130 @@ namespace backEnd.Logica
             productoFabricado.Categoria = productoLinq.Categoria;
             productoFabricado.Marca = productoLinq.Marca;
             productoFabricado.Informacion_Nutricional = productoLinq.Informacion_Nutricional;
+            productoFabricado.nutri_score = productoLinq.Nutri_Score;
             return productoFabricado;
+        }
+
+
+        // Este método se encarga de hacer la solicitud a OpenFoodFacts y obtener los datos del producto
+        public async Task<CodigoBarras> ObtenerProductoDeOpenFoodFacts(string codigoBarras)
+        {
+            try
+            {
+                string url = $"https://world.openfoodfacts.org/api/v0/product/{codigoBarras}.json";
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var productData = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+
+                if (productData != null && productData.status == 1)
+                {
+                    CodigoBarras producto = new CodigoBarras
+                    {
+                        Codigo_Barras = codigoBarras,
+                        Nombre = productData.product.product_name != null ? productData.product.product_name.ToString() : "",
+                        Categoria = productData.product.categories != null ? productData.product.categories.ToString() : "",
+                        Marca = productData.product.brands != null ? productData.product.brands.ToString() : "",
+                        Informacion_Nutricional = productData.product.nutriments != null ? JsonConvert.SerializeObject(productData.product.nutriments) : "",
+                        nutri_score = CalcularCalificacionNutricional(JsonConvert.SerializeObject(productData.product.nutriments))
+                    };
+
+                    return producto;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        private int CalcularCalificacionNutricional(string informacionNutricionalJson)
+        {
+            dynamic infoNutricional = JsonConvert.DeserializeObject(informacionNutricionalJson);
+
+            int puntaje = 0;
+            int factoresConsiderados = 0;
+
+            // Evaluar las calorías: 1 = Bueno, 5 = Malo
+            if (infoNutricional["energy-kcal_value"] != null)
+            {
+                double calorias = infoNutricional["energy-kcal_value"];
+                if (calorias < 100) puntaje += 1; // Bajo en calorías
+                else if (calorias < 200) puntaje += 2;
+                else if (calorias < 300) puntaje += 3;
+                else if (calorias < 400) puntaje += 4;
+                else puntaje += 5; // Alto en calorías
+                factoresConsiderados++;
+            }
+
+            // Evaluar la grasa saturada
+            if (infoNutricional["saturated-fat_value"] != null)
+            {
+                double grasaSaturada = infoNutricional["saturated-fat_value"];
+                if (grasaSaturada < 1) puntaje += 1; // Bajo en grasa saturada
+                else if (grasaSaturada < 5) puntaje += 2;
+                else if (grasaSaturada < 10) puntaje += 3;
+                else if (grasaSaturada < 15) puntaje += 4;
+                else puntaje += 5; // Alto en grasa saturada
+                factoresConsiderados++;
+            }
+
+            // Evaluar los azúcares
+            if (infoNutricional["sugars_value"] != null)
+            {
+                double azucares = infoNutricional["sugars_value"];
+                if (azucares < 5) puntaje += 1; // Bajo en azúcar
+                else if (azucares < 10) puntaje += 2;
+                else if (azucares < 20) puntaje += 3;
+                else if (azucares < 30) puntaje += 4;
+                else puntaje += 5; // Alto en azúcar
+                factoresConsiderados++;
+            }
+
+            // Evaluar la sal
+            if (infoNutricional["salt_value"] != null)
+            {
+                double sal = infoNutricional["salt_value"];
+                if (sal < 0.3) puntaje += 1; // Bajo en sal
+                else if (sal < 0.7) puntaje += 2;
+                else if (sal < 1) puntaje += 3;
+                else if (sal < 1.5) puntaje += 4;
+                else puntaje += 5; // Alto en sal
+                factoresConsiderados++;
+            }
+
+            // Evaluar las proteínas
+            if (infoNutricional["proteins_value"] != null)
+            {
+                double proteinas = infoNutricional["proteins_value"];
+                if (proteinas > 10) puntaje += 1; // Alto en proteínas
+                else puntaje += 3; // Bajo en proteínas
+                factoresConsiderados++;
+            }
+
+            // Evaluar la fibra
+            if (infoNutricional["fiber_value"] != null)
+            {
+                double fibra = infoNutricional["fiber_value"];
+                if (fibra > 5) puntaje += 1; // Alto en fibra
+                else puntaje += 3; // Bajo en fibra
+                factoresConsiderados++;
+            }
+
+            // Calcular el promedio de la puntuación
+            if (factoresConsiderados > 0)
+            {
+                double promedio = (double)puntaje / factoresConsiderados;
+
+                // Asegurar que el puntaje esté entre 1 y 5
+                return Math.Max(1, Math.Min(5, (int)Math.Ceiling(promedio)));
+            }
+
+            // Si no se evaluaron factores, devolver un puntaje neutro de 3
+            return 3;
         }
 
     }
