@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -11,13 +12,6 @@ namespace API.Controllers
 {
     public class ProductController : ApiController
     {
-        // GET: Product
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/productos/consultarProducto")]
-        public ResConsultarProductosEscaneados productosEscaneados(ReqConsultarProductosEscaneados req)
-        {
-            return new LogProducto().consultar(req);
-        }
 
         //Post api/values
         [System.Web.Http.HttpPost]
@@ -32,6 +26,14 @@ namespace API.Controllers
         public ResEliminarProducto eliminarProducto(ReqEliminarProducto req)
         {
             return new LogProducto().eliminar(req);
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/productos/buscarProducto")]
+        public Task<ResBuscarProducto> buscarProducto(ReqBuscarProducto req)
+        {
+            var resultado = new LogProducto().buscar(req); // Usamos await
+            return resultado;
         }
     }
 }

@@ -17,6 +17,8 @@ namespace backEnd.Logica
 
             try
             {
+
+
                 if (req == null)
                 {
                     res.exito = false;
@@ -39,6 +41,7 @@ namespace backEnd.Logica
                 }
                 else
                 {
+
                     bool? exito = false;
                     string mensaje = "";
 
@@ -54,6 +57,9 @@ namespace backEnd.Logica
                         ref mensaje
                     );
 
+
+                    // Evaluar el resultado del SP
+
                     if (exito == true)
                     {
                         res.exito = true;
@@ -61,7 +67,7 @@ namespace backEnd.Logica
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add(mensaje);
+                        res.mensaje.Add(mensaje);  // Aquí se agrega el mensaje devuelto por el SP
                     }
                 }
             }
@@ -262,58 +268,5 @@ namespace backEnd.Logica
 
             return res;
         }
-        public ResObtenerUsuarios obtener()
-        {
-            ResObtenerUsuarios res = new ResObtenerUsuarios();
-            res.usuarios = new List<Usuario>(); 
-            res.mensaje = new List<string>();  
-
-            try
-            {
-               
-                ConectionDataContext miLinq = new ConectionDataContext();
-
-               
-                List<SP_Obtener_UsuariosResult> usuariosBD = miLinq.SP_Obtener_Usuarios().ToList();
-
-              
-                foreach (var usuarioBD in usuariosBD)
-                {
-                    Usuario usuario = new Usuario
-                    {
-                        Usuario_ID = usuarioBD.Usuario_ID,
-                        Nombre = usuarioBD.Nombre,
-                        Email = usuarioBD.Email,
-                        FechaCreacion = usuarioBD.FechaCreacion
-                    };
-                    res.usuarios.Add(usuario);
-                }
-
-                res.exito = true;  
-            }
-            catch (Exception ex)
-            {
-                res.exito = false;
-                res.mensaje.Add(ex.Message); 
-            }
-
-            return res;
-        }
-        private Usuario factoriaUsuario(SP_Obtener_UsuariosResult usuarioBD)
-        {
-            
-            Usuario usuario = new Usuario
-            {
-                Usuario_ID = usuarioBD.Usuario_ID,
-                Nombre = usuarioBD.Nombre,
-                Email = usuarioBD.Email,
-                FechaCreacion = usuarioBD.FechaCreacion 
-            };
-
-            return usuario;
-        }
-
     }
 }
-
-
