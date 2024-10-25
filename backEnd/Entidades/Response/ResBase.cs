@@ -9,6 +9,6 @@ namespace backEnd.Entidades
     public class ResBase
     {
         public bool exito { get; set; }
-        public List<string> mensaje { get; set; }
+        public List<string> mensaje { get; set; } = new List<string>();
     }
 }

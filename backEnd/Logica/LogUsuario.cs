@@ -87,51 +87,60 @@ namespace backEnd.Logica
 
             try
             {
-                if (string.IsNullOrEmpty(req.Email) || string.IsNullOrEmpty(req.Password))
+                // Validación de entrada
+                if (string.IsNullOrEmpty(req.Email))
                 {
                     res.exito = false;
-                    res.mensaje.Add("El correo electrónico y la contraseña son requeridos.");
+                    res.mensaje.Add("El correo electrónico es requerido.");
                     return res;
                 }
-
-                bool? exito = false;
-                string hashedPasswordFromDB = null; // Variable para recibir el hash almacenado
-
-                ConectionDataContext miLinq = new ConectionDataContext();
-                miLinq.SP_Iniciar_Sesion(req.Email, ref hashedPasswordFromDB, ref exito);
-
-                if (exito == true && !string.IsNullOrEmpty(hashedPasswordFromDB))
+                else if (string.IsNullOrEmpty(req.Password))
                 {
-                    // Verificar la contraseña ingresada contra el hash de la base de datos
-                    if (PasswordHelper.VerificarContraseña(req.Password, hashedPasswordFromDB))
+                    res.exito = false;
+                    res.mensaje.Add("La contraseña es requerida.");
+                    return res;
+                }
+                else
+                {
+                    bool? exito = false;
+                    string hashedPasswordFromDB = null; // Variable para recibir el hash almacenado
+
+                    ConectionDataContext miLinq = new ConectionDataContext();
+                    miLinq.SP_Iniciar_Sesion(req.Email, ref hashedPasswordFromDB, ref exito);
+
+                    if (exito == true && !string.IsNullOrEmpty(hashedPasswordFromDB)) // Verificar que el usuario exista y tenga contraseña
                     {
-                        // La contraseña es correcta
-                        res.exito = true;
-                        res.mensaje.Add("Inicio de sesión exitoso.");
-                        // Aquí puedes generar el token JWT si corresponde
-                        // res.Token = GenerarToken(res.Usuario); // Implementa la lógica para generar el token
+                        // Verificar la contraseña ingresada contra el hash de la base de datos
+                        if (PasswordHelper.VerificarContraseña(req.Password, hashedPasswordFromDB))
+                        {
+                            // La contraseña es correcta
+                            res.exito = true;
+                            res.mensaje.Add("Inicio de sesión exitoso.");
+                        }
+                        else
+                        {
+                            res.exito = false;
+                            res.mensaje.Add("Password incorrecto.");
+                        }
                     }
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add("Password incorrectas.");
+                        res.mensaje.Add("Email incorrecto.");
                     }
-                }
-                else
-                {
-                    res.exito = false;
-                    res.mensaje.Add("Email incorrectas.");
                 }
             }
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add($"Error: {ex.Message}");
+                res.mensaje.Add("Ocurrió un error en el inicio de sesión.");
+                res.mensaje.Add($"Detalle del error: {ex.Message}");
                 res.mensaje.Add($"StackTrace: {ex.StackTrace}");
             }
 
             return res;
         }
+
 
         public ResActualizarUsuario actualizar(ReqActualizarUsuario req)
         {
