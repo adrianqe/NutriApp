@@ -15,10 +15,10 @@ namespace backEnd.Response
         public Usuario Usuario { get; set; }
         // public string Token { get; set; }     Cuesta Mucho, ocupo mas tiempo <3 despues lo hago
 
-        public ResIniciarSesionUsuario()
-        {
-            Usuario = null;          
-          //  Token = string.Empty;    Cuesta Mucho, ocupo mas tiempo <3
-        }
+        //public ResIniciarSesionUsuario()
+        //{
+        //    Usuario = null;          
+        //  //  Token = string.Empty;    Cuesta Mucho, ocupo mas tiempo <3
+        //}
     }
 }

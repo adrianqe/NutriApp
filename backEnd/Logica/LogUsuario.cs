@@ -1,11 +1,12 @@
 ﻿using backEnd.DataAccess;
 using backEnd.Entidades;
+using backEnd.Request;
+using backEnd.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Encryption.PasswordHelper;
 
 namespace backEnd.Logica
 {
@@ -46,7 +47,7 @@ namespace backEnd.Logica
                     string mensaje = "";
 
                     // Encriptar la contraseña antes de almacenarla
-                    string hashedPassword = PasswordHelper.HashPassword(req.Password);
+                    string hashedPassword = PasswordHelper.HashContraseña(req.Password);
 
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Registrar_Nuevo_Usuario(
@@ -80,7 +81,6 @@ namespace backEnd.Logica
             return res;
         }
 
-
         public ResIniciarSesionUsuario iniciarSesion(ReqIniciarSesionUsuario req)
         {
             ResIniciarSesionUsuario res = new ResIniciarSesionUsuario();
@@ -95,41 +95,39 @@ namespace backEnd.Logica
                 }
 
                 bool? exito = false;
-                string mensaje = "";
+                string hashedPasswordFromDB = null; // Variable para recibir el hash almacenado
 
                 ConectionDataContext miLinq = new ConectionDataContext();
-                List<SP_Iniciar_Sesion> resultado = miLinq.SP_Iniciar_Sesion(req.Email, req.Password, ref exito, ref mensaje).ToList();
+                miLinq.SP_Iniciar_Sesion(req.Email, ref hashedPasswordFromDB, ref exito);
 
-                if (resultado.Count > 0)
+                if (exito == true && !string.IsNullOrEmpty(hashedPasswordFromDB))
                 {
-                    // Aquí deberías obtener el hash almacenado en la base de datos (suponiendo que lo devuelves en el resultado)
-                    string hashedPassword = resultado.First().Password; // Asegúrate de que esto sea correcto
-
-                    // Verificar la contraseña
-                    if (PasswordHelper.VerifyPassword(req.Password, hashedPassword))
+                    // Verificar la contraseña ingresada contra el hash de la base de datos
+                    if (PasswordHelper.VerificarContraseña(req.Password, hashedPasswordFromDB))
                     {
-                        res.Usuario = this.factoriaUsuario(resultado.First());
+                        // La contraseña es correcta
                         res.exito = true;
-
-                        // Aquí puedes generar el token JWT
+                        res.mensaje.Add("Inicio de sesión exitoso.");
+                        // Aquí puedes generar el token JWT si corresponde
                         // res.Token = GenerarToken(res.Usuario); // Implementa la lógica para generar el token
                     }
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add("Credenciales incorrectas.");
+                        res.mensaje.Add("Password incorrectas.");
                     }
                 }
                 else
                 {
                     res.exito = false;
-                    res.mensaje.Add("Credenciales incorrectas.");
+                    res.mensaje.Add("Email incorrectas.");
                 }
             }
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message);
+                res.mensaje.Add($"Error: {ex.Message}");
+                res.mensaje.Add($"StackTrace: {ex.StackTrace}");
             }
 
             return res;
