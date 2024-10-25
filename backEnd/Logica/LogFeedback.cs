@@ -122,51 +122,5 @@ namespace backEnd.Logica
             return res;
         }
 
-        public ResObtenerFeedbacks obtener(ReqObtenerFeedbacks req)
-        {
-            ResObtenerFeedbacks res = new ResObtenerFeedbacks();
-            res.errores = new List<string>();
-            res.feedbacks = new List<Feedback>();
-
-            try
-            {
-                ConectionDataContext miLinq = new ConectionDataContext();
-
-          
-                List<SP_OBTENER_FEEDBACKSResult> listaFeedbacksBD = miLinq.SP_OBTENER_FEEDBACKS().ToList();
-
-                foreach (SP_OBTENER_FEEDBACKSResult feedbackBD in listaFeedbacksBD)
-                {
-                    res.feedbacks.Add(this.factoriaFeedback(feedbackBD));
-                }
-
-                res.exito = true;
-            }
-            catch (Exception ex)
-            {
-                res.exito = false;
-                res.errores.Add(ex.Message);
-            }
-
-            return res;
-        }
-
-     
-        private Feedback factoriaFeedback(SP_OBTENER_FEEDBACKSResult feedbackBD)
-        {
-            Feedback feedback = new Feedback
-            {
-                FeedbackID = feedbackBD.feedbackID,
-                UsuarioID = feedbackBD.usuarioID,
-                ProductoID = feedbackBD.productoID,
-                Calificacion = feedbackBD.calificacion,
-                Comentario = feedbackBD.comentario,
-
-            };
-
     }
-            return feedback;
-        }
-    }
-}
 }

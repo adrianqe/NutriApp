@@ -34,13 +34,5 @@ namespace API.Controllers
         {
             return new LogUsuario().eliminar(req);
         }
-
-        // GET: api/usuario/consultar
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/usuario/consultar")]
-        public ResConsultarUsuario ConsultarUsuario( ReqConsultarUsuario req)
-        {
-            return new LogUsuario().consultar(req);
-        }
     }
 }

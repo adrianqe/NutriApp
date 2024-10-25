@@ -1,16 +1,22 @@
 ﻿using backEnd.DataAccess;
 using backEnd.Entidades;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 
 namespace backEnd.Logica
 {
     public class LogProducto
     {
+        private static readonly HttpClient client = new HttpClient(); // Se crea un cliente HTTP para hacer las solicitudes a OpenFoodFacts
+
+        private NutriScore NutriScore = new NutriScore();
         public ResActualizarProducto actualizar(ReqActualizarProducto req)
         {
             ResActualizarProducto res = new ResActualizarProducto();
@@ -129,38 +135,68 @@ namespace backEnd.Logica
             return res;
         }
 
-        public ResConsultarProductosEscaneados consultar(ReqConsultarProductosEscaneados req)
+        public async Task<ResBuscarProducto> buscar(ReqBuscarProducto req)
         {
-            //objeto ResObtenerPublicaciones donde esta la lista
-            ResConsultarProductosEscaneados res = new ResConsultarProductosEscaneados();
+            ResBuscarProducto res = new ResBuscarProducto();
 
-            //se inicializan las variables de referencia que pide el SP
-            bool? exito = false;
-            string mensaje = "";
+            // Buscar productos por nombre (devuelve lista)
+            List<CodigoBarras> productos = await BuscarProductoPorNombre(req.NombreProducto);
 
             try
             {
-                //conexion al linq
-                ConectionDataContext miLinq = new ConectionDataContext();
-                //se adaptada al formato del
-                //lenguaje de programacion, usando el nombre del procedimiento+Result
-                //obtiene la los datos devueltos por la BD
-                //en este caso se usa "toList()" para traer una lista
-                List<SP_Consultar_Productos_EscaneadosResult> productos = miLinq.SP_Consultar_Productos_Escaneados(req.Usuario_ID, ref exito, ref mensaje).ToList();
-
-                //se pasa por cada una de las entradas de la lista y 
-                //se genera el objeto Producto que se pondra en la lista
-                //antes mencionada en la linea 81
-                foreach (SP_Consultar_Productos_EscaneadosResult unProducto in productos)
+                if (productos == null || !productos.Any())
                 {
-                    res.ProductosEscaneados.Add(this.factoriaProducto(unProducto));
+                    res.exito = false;
+                    res.mensaje.Add("No se encontraron productos con ese nombre.");
                 }
-                //Si nada fallo se pone exito en true
-                res.exito = true;
+                else
+                {
+                    ConectionDataContext miLinq = new ConectionDataContext();
+                    bool? exito = false;
+                    string mensaje = "";
+
+                    foreach (var producto in productos)
+                    {
+                        // Enviar cada producto al SP para almacenarlo o verificar si ya existe
+                        var productoEscaneado = miLinq.SP_Escanear_Codigo(
+                            producto.Codigo_Barras,
+                            producto.Nombre,
+                            producto.Categoria,
+                            producto.Marca,
+                            producto.Informacion_Nutricional,
+                            producto.nutri_score,
+                            ref exito,
+                            ref mensaje
+                        ).ToList();
+
+                        if (exito == true && productoEscaneado.Any())
+                        {
+                            // Mapear y agregar cada producto encontrado o insertado al resultado
+                            foreach (SP_Escanear_CodigoResult unProductoBuscado in productoEscaneado)
+                            {
+                                res.codigoBarras.Add(factoriaCodigoBarras(unProductoBuscado));
+                            }
+                        }
+                        else
+                        {
+                            res.mensaje.Add(mensaje);
+                        }
+                    }
+
+                    // Si al menos un producto fue procesado correctamente
+                    if (res.codigoBarras.Any())
+                    {
+                        res.exito = true;
+                    }
+                    else
+                    {
+                        res.exito = false;
+                        res.mensaje.Add("No se pudo procesar ningún producto.");
+                    }
+                }
             }
             catch (Exception ex)
             {
-                //Si dios nos abandono se pone el resultado en false
                 res.exito = false;
                 res.mensaje.Add(ex.Message);
             }
@@ -168,12 +204,60 @@ namespace backEnd.Logica
             return res;
         }
 
-        private Producto factoriaProducto(SP_Consultar_Productos_EscaneadosResult productosLinq)
+
+        // Método para mapear el resultado del SP a la entidad CodigoBarras
+        private CodigoBarras factoriaCodigoBarras(SP_Escanear_CodigoResult productoLinq)
         {
-            Producto productoFabricado = new Producto();
-            productoFabricado.Nombre = productosLinq.Nombre;
-            productoFabricado.Fecha_Escaneo = productosLinq.Fecha_Escaneo;
+            CodigoBarras productoFabricado = new CodigoBarras();
+            productoFabricado.Codigo_Barras = productoLinq.Codigo_Barras;
+            productoFabricado.Nombre = productoLinq.Nombre;
+            productoFabricado.Categoria = productoLinq.Categoria;
+            productoFabricado.Marca = productoLinq.Marca;
+            productoFabricado.Informacion_Nutricional = productoLinq.Informacion_Nutricional;
+            productoFabricado.nutri_score = productoLinq.Nutri_Score;
             return productoFabricado;
         }
+        public async Task<List<CodigoBarras>> BuscarProductoPorNombre(string nombreProducto)
+        {
+            try
+            {
+                // Reemplaza los espacios en blanco por %20 para hacer la URL correcta
+                string nombreProductoEncoded = Uri.EscapeDataString(nombreProducto);
+                string url = $"https://world.openfoodfacts.org/cgi/search.pl?search_terms={nombreProductoEncoded}&search_simple=1&json=1";
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var productData = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+
+                List<CodigoBarras> productosEncontrados = new List<CodigoBarras>();
+
+                if (productData != null && productData.count > 0)
+                {
+                    foreach (var product in productData.products)
+                    {
+                        CodigoBarras producto = new CodigoBarras
+                        {
+                            Codigo_Barras = product.code != null ? product.code.ToString() : "",
+                            Nombre = product.product_name != null ? product.product_name.ToString() : "",
+                            Categoria = product.categories != null ? product.categories.ToString() : "",
+                            Marca = product.brands != null ? product.brands.ToString() : "",
+                            Informacion_Nutricional = product.nutriments != null ? JsonConvert.SerializeObject(product.nutriments) : "",
+                            nutri_score = NutriScore.CalcularCalificacion(JsonConvert.SerializeObject(product.nutriments))
+                        };
+
+                        productosEncontrados.Add(producto);
+                    }
+                }
+
+                return productosEncontrados;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
     }
 }

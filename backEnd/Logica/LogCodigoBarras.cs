@@ -11,6 +11,7 @@ namespace backEnd.Logica
     public class LogCodigoBarras
     {
         private static readonly HttpClient client = new HttpClient(); // Se crea un cliente HTTP para hacer las solicitudes a OpenFoodFacts
+        private NutriScore NutriScore = new NutriScore();
 
         public async Task<ResEscanearCodigo> escanear(ReqEscanearCodigo req)
         {
@@ -53,7 +54,7 @@ namespace backEnd.Logica
                         producto.nutri_score,
                         ref exito,
                         ref mensaje
-                    ).ToList(); // No uses ToString() aquí
+                    ).ToList();
 
                     // Validar si el producto fue insertado o ya existía
                     if (exito == true && productoEscaneado.Any())
@@ -117,7 +118,7 @@ namespace backEnd.Logica
                         Categoria = productData.product.categories != null ? productData.product.categories.ToString() : "",
                         Marca = productData.product.brands != null ? productData.product.brands.ToString() : "",
                         Informacion_Nutricional = productData.product.nutriments != null ? JsonConvert.SerializeObject(productData.product.nutriments) : "",
-                        nutri_score = CalcularCalificacionNutricional(JsonConvert.SerializeObject(productData.product.nutriments))
+                        nutri_score = NutriScore.CalcularCalificacion(JsonConvert.SerializeObject(productData.product.nutriments))
                     };
 
                     return producto;
