@@ -26,13 +26,5 @@ namespace API.Controllers
         {
             return new LogFeedback().eliminar(req);
         }
-
-        // GET: api/feedback/consultar
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("api/feedback/consultar")]
-        public ResConsultarFeedback ConsultarFeedback([FromUri] ReqConsultarFeedback req)
-        {
-            return new LogFeedback().consultar(req);
-        }
     }
 }

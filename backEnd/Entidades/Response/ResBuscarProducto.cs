@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace backEnd.Entidades
 {
-	public class ResConsultarFeedback : ResBase
-	{
-		public List<Feedback> Feedbacks { get; set; } = new List<Feedback>();
-	}
+    public class ResBuscarProducto : ResBase
+    {
+        public List<CodigoBarras> codigoBarras { get; set; } = new List<CodigoBarras>();
+    }
 }

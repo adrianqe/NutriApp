@@ -16,7 +16,7 @@ namespace backEnd.Logica
 
             try
             {
-                
+                //Validar que el request no sea nulo
                 if (req == null)
                 {
                     res.exito = false;
@@ -39,11 +39,11 @@ namespace backEnd.Logica
                 }
                 else
                 {
-                  
+                    // Variables de salida del SP
                     bool? exito = false;
                     string mensaje = "";
 
-                    
+                    // Crear el contexto de conexión y llamar al SP
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Registrar_Nuevo_Usuario(
                         req.Nombre,
@@ -53,7 +53,7 @@ namespace backEnd.Logica
                         ref mensaje // Mensaje de salida del SP
                     );
 
-                    
+                    // Evaluar el resultado del SP
                     if (exito == true)
                     {
                         res.exito = true;
@@ -61,14 +61,15 @@ namespace backEnd.Logica
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add(mensaje);
+                        res.mensaje.Add(mensaje);  // Aquí se agrega el mensaje devuelto por el SP
                     }
                 }
             }
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message);  
+                res.mensaje.Add(ex.Message);  // En caso de que ocurra un error en la lógica
+            }
 
             return res;
         }
@@ -206,94 +207,8 @@ namespace backEnd.Logica
 
             return res;
         }
-        public ResObtenerUsuarios obtener()
-        {
-            ResObtenerUsuarios res = new ResObtenerUsuarios();
-            res.usuarios = new List<Usuario>(); 
-            res.mensaje = new List<string>();  
 
-            try
-            {
-               
-                ConectionDataContext miLinq = new ConectionDataContext();
 
-               
-                List<SP_Obtener_UsuariosResult> usuariosBD = miLinq.SP_Obtener_Usuarios().ToList();
-
-              
-                foreach (var usuarioBD in usuariosBD)
-                {
-                    Usuario usuario = new Usuario
-                    {
-                        Usuario_ID = usuarioBD.Usuario_ID,
-                        Nombre = usuarioBD.Nombre,
-                        Email = usuarioBD.Email,
-                        FechaCreacion = usuarioBD.FechaCreacion
-                    };
-                    res.usuarios.Add(usuario);
-                }
-
-                res.exito = true;  
-            }
-            catch (Exception ex)
-            {
-                res.exito = false;
-                res.mensaje.Add(ex.Message); 
-            }
-
-            return res;
-        }
-        private Usuario factoriaUsuario(SP_Obtener_UsuariosResult usuarioBD)
-        {
-            
-            Usuario usuario = new Usuario
-            {
-                Usuario_ID = usuarioBD.Usuario_ID,
-                Nombre = usuarioBD.Nombre,
-                Email = usuarioBD.Email,
-                FechaCreacion = usuarioBD.FechaCreacion 
-            };
-
-            return usuario;
-        }
-
-    }
-}
-
-        public ResConsultarUsuario consultar(ReqConsultarUsuario req)
-        {
-            ResConsultarUsuario res = new ResConsultarUsuario();
-
-            try
-            {
-                if (req.UsuarioID == null)
-                {
-                    res.exito = false;
-                    res.mensaje.Add("El ID de usuario no puede ser nulo");
-                }
-                else
-                {
-                    bool? exito = false;
-                    string mensaje = "";
-
-                    ConectionDataContext miLinq = new ConectionDataContext();
-
-                    List<SP_Consultar_UsuarioResult> resultado = miLinq.SP_Consultar_Usuario(req.UsuarioID, ref exito, ref mensaje).ToList();
-
-                    foreach (SP_Consultar_UsuarioResult usuarioDB in resultado)
-                    {
-                        res.Usuarios.Add(this.factoriaUsuario(usuarioDB));
-                    }
-                    res.exito = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                res.exito = false;
-                res.mensaje.Add(ex.Message);
-            }
-            return res;
-        }
 
         private Usuario factoriaUsuario(SP_Consultar_UsuarioResult usuarioBD) // Método para convertir el resultado del SP en un objeto Usuario
         {
