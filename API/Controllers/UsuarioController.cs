@@ -34,5 +34,13 @@ namespace API.Controllers
         {
             return new LogUsuario().eliminar(req);
         }
+
+        // POST: api/usuario/iniciarSesion
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/usuario/iniciarSesion")]
+        public ResIniciarSesionUsuario IniciarSesion(ReqIniciarSesionUsuario req)
+        {
+            return new LogUsuario().iniciarSesion(req);
+        }
     }
 }
