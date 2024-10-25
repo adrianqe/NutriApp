@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="NutriDataBase" Class="ConectionDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=AORUS-15;Initial Catalog=NutriDataBase;Integrated Security=True;Encrypt=True;Trust Server Certificate=True" SettingsObjectName="backEnd.Properties.Settings" SettingsPropertyName="NutriDataBaseConnectionString" Provider="System.Data.SqlClient" />
   <Function Name="dbo.SP_Registrar_Nuevo_Usuario" Method="SP_Registrar_Nuevo_Usuario">
     <Parameter Name="Nombre" Parameter="nombre" Type="System.String" DbType="NVarChar(100)" />
     <Parameter Name="Email" Parameter="email" Type="System.String" DbType="NVarChar(150)" />
@@ -65,6 +64,19 @@
     <Parameter Name="Categoria" Parameter="categoria" Type="System.String" DbType="NVarChar(50)" />
     <Parameter Name="Marca" Parameter="marca" Type="System.String" DbType="NVarChar(50)" />
     <Parameter Name="Informacion_Nutricional" Parameter="informacion_Nutricional" Type="System.String" DbType="NVarChar(MAX)" />
+    <Parameter Name="Exito" Parameter="exito" Type="System.Boolean" DbType="Bit" Direction="InOut" />
+    <Parameter Name="Mensaje" Parameter="mensaje" Type="System.String" DbType="NVarChar(255)" Direction="InOut" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.SP_Iniciar_Sesion" Method="SP_Iniciar_Sesion">
+    <Parameter Name="Email" Parameter="email" Type="System.String" DbType="NVarChar(150)" />
+    <Parameter Name="Password_Hash" Parameter="password_Hash" Type="System.String" DbType="NVarChar(255)" />
+    <Parameter Name="Exito" Parameter="exito" Type="System.Boolean" DbType="Bit" Direction="InOut" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.SP_HistorialUsuario" Method="SP_HistorialUsuario">
+    <Parameter Name="Usuario_ID" Parameter="usuario_ID" Type="System.Int32" DbType="Int" />
+    <Parameter Name="Producto_ID" Parameter="producto_ID" Type="System.Int32" DbType="Int" />
     <Parameter Name="Exito" Parameter="exito" Type="System.Boolean" DbType="Bit" Direction="InOut" />
     <Parameter Name="Mensaje" Parameter="mensaje" Type="System.String" DbType="NVarChar(255)" Direction="InOut" />
     <Return Type="System.Int32" />

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Encryption.PasswordHelper;
 
 namespace backEnd.Logica
 {
@@ -16,7 +17,6 @@ namespace backEnd.Logica
 
             try
             {
-                
                 if (req == null)
                 {
                     res.exito = false;
@@ -39,21 +39,21 @@ namespace backEnd.Logica
                 }
                 else
                 {
-                  
                     bool? exito = false;
                     string mensaje = "";
 
-                    
+                    // Encriptar la contraseña antes de almacenarla
+                    string hashedPassword = PasswordHelper.HashPassword(req.Password);
+
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Registrar_Nuevo_Usuario(
                         req.Nombre,
                         req.Email,
-                        req.Password,  // Esto debería ser el hash ya procesado
-                        ref exito,  // Aquí se pasa por referencia
-                        ref mensaje // Mensaje de salida del SP
+                        hashedPassword,  // Usar la contraseña encriptada
+                        ref exito,
+                        ref mensaje
                     );
 
-                    
                     if (exito == true)
                     {
                         res.exito = true;
@@ -68,7 +68,63 @@ namespace backEnd.Logica
             catch (Exception ex)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message);  
+                res.mensaje.Add(ex.Message);
+            }
+
+            return res;
+        }
+
+
+        public ResIniciarSesionUsuario iniciarSesion(ReqIniciarSesionUsuario req)
+        {
+            ResIniciarSesionUsuario res = new ResIniciarSesionUsuario();
+
+            try
+            {
+                if (string.IsNullOrEmpty(req.Email) || string.IsNullOrEmpty(req.Password))
+                {
+                    res.exito = false;
+                    res.mensaje.Add("El correo electrónico y la contraseña son requeridos.");
+                    return res;
+                }
+
+                bool? exito = false;
+                string mensaje = "";
+
+                ConectionDataContext miLinq = new ConectionDataContext();
+                List<SP_Iniciar_Sesion> resultado = miLinq.SP_Iniciar_Sesion(req.Email, req.Password, ref exito, ref mensaje).ToList();
+
+                if (resultado.Count > 0)
+                {
+                    // Aquí deberías obtener el hash almacenado en la base de datos (suponiendo que lo devuelves en el resultado)
+                    string hashedPassword = resultado.First().Password; // Asegúrate de que esto sea correcto
+
+                    // Verificar la contraseña
+                    if (PasswordHelper.VerifyPassword(req.Password, hashedPassword))
+                    {
+                        res.Usuario = this.factoriaUsuario(resultado.First());
+                        res.exito = true;
+
+                        // Aquí puedes generar el token JWT
+                        // res.Token = GenerarToken(res.Usuario); // Implementa la lógica para generar el token
+                    }
+                    else
+                    {
+                        res.exito = false;
+                        res.mensaje.Add("Credenciales incorrectas.");
+                    }
+                }
+                else
+                {
+                    res.exito = false;
+                    res.mensaje.Add("Credenciales incorrectas.");
+                }
+            }
+            catch (Exception ex)
+            {
+                res.exito = false;
+                res.mensaje.Add(ex.Message);
+            }
 
             return res;
         }
@@ -260,42 +316,43 @@ namespace backEnd.Logica
     }
 }
 
-        public ResConsultarUsuario consultar(ReqConsultarUsuario req)
+
+
+    public ResConsultarUsuario consultar(ReqConsultarUsuario req)
+    {
+        ResConsultarUsuario res = new ResConsultarUsuario();
+
+        try
         {
-            ResConsultarUsuario res = new ResConsultarUsuario();
-
-            try
-            {
-                if (req.UsuarioID == null)
-                {
-                    res.exito = false;
-                    res.mensaje.Add("El ID de usuario no puede ser nulo");
-                }
-                else
-                {
-                    bool? exito = false;
-                    string mensaje = "";
-
-                    ConectionDataContext miLinq = new ConectionDataContext();
-
-                    List<SP_Consultar_UsuarioResult> resultado = miLinq.SP_Consultar_Usuario(req.UsuarioID, ref exito, ref mensaje).ToList();
-
-                    foreach (SP_Consultar_UsuarioResult usuarioDB in resultado)
-                    {
-                        res.Usuarios.Add(this.factoriaUsuario(usuarioDB));
-                    }
-                    res.exito = true;
-                }
-            }
-            catch (Exception ex)
+            if (req.UsuarioID == null)
             {
                 res.exito = false;
-                res.mensaje.Add(ex.Message);
+                res.mensaje.Add("El ID de usuario no puede ser nulo");
             }
-            return res;
-        }
+            else
+            {
+                bool? exito = false;
+                string mensaje = "";
 
-        private Usuario factoriaUsuario(SP_Consultar_UsuarioResult usuarioBD) // Método para convertir el resultado del SP en un objeto Usuario
+                ConectionDataContext miLinq = new ConectionDataContext();
+
+                List<SP_Consultar_UsuarioResult> resultado = miLinq.SP_Consultar_Usuario(req.UsuarioID, ref exito, ref mensaje).ToList();
+
+                foreach (SP_Consultar_UsuarioResult usuarioDB in resultado)
+                {
+                    res.Usuarios.Add(this.factoriaUsuario(usuarioDB));
+                }
+                res.exito = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            res.exito = false;
+            res.mensaje.Add(ex.Message);
+        }
+        return res;
+    }
+    private Usuario factoriaUsuario(SP_Consultar_UsuarioResult usuarioBD) 
         {
             Usuario usuario = new Usuario();
             usuario.Usuario_ID = usuarioBD.Usuario_ID;
