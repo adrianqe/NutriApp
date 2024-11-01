@@ -12,14 +12,13 @@ namespace backEnd.Logica
 {
     public class LogUsuario
     {
-        public ResInsertarUsuario insertar(ReqInsertarUsuario req)
+        public async Task<ResInsertarUsuario> InsertarAsync(ReqInsertarUsuario req)
         {
             ResInsertarUsuario res = new ResInsertarUsuario();
+            EmailService emailService = new EmailService();
 
             try
             {
-
-
                 if (req == null)
                 {
                     res.exito = false;
@@ -42,13 +41,16 @@ namespace backEnd.Logica
                 }
                 else
                 {
-
                     bool? exito = false;
                     string mensaje = "";
 
                     // Encriptar la contraseña antes de almacenarla
                     string hashedPassword = PasswordHelper.HashContraseña(req.Password);
 
+                    // Enviar el correo y esperar el código de verificación
+                    int codigoVerificacion = await emailService.EnviarEmailAsync(req.Email);
+
+                    // Se podria guardar el código de verificación temporalmente en la base de datos, aun pendiente por implementar
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Registrar_Nuevo_Usuario(
                         req.Nombre,
@@ -58,17 +60,16 @@ namespace backEnd.Logica
                         ref mensaje
                     );
 
-
                     // Evaluar el resultado del SP
-
                     if (exito == true)
                     {
                         res.exito = true;
+                        res.mensaje.Add("Usuario registrado exitosamente. Código de verificación enviado: " + codigoVerificacion); // Para pruebas, temporal
                     }
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add(mensaje);  // Aquí se agrega el mensaje devuelto por el SP
+                        res.mensaje.Add(mensaje);
                     }
                 }
             }

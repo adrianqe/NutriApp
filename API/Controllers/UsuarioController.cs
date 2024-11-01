@@ -14,9 +14,9 @@ namespace API.Controllers
         // POST: api/usuario/insertar
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("api/usuario/insertar")]
-        public ResInsertarUsuario InsertarUsuario(ReqInsertarUsuario req)
+        public async Task<ResInsertarUsuario> InsertarUsuario(ReqInsertarUsuario req)
         {
-            return new LogUsuario().insertar(req);
+            return await new LogUsuario().InsertarAsync(req);
         }
 
         // PUT: api/usuario/actualizar
