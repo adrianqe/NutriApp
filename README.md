@@ -6,7 +6,7 @@ Es una aplicación diseñada para facilitar la gestión y seguimiento de product
 NutriApp permite a los usuarios escanear productos utilizando la cámara de un dispositivo móvil para obtener información detallada sobre ellos, como el contenido nutricional y otras características. El proyecto también incluye funcionalidades para gestionar perfiles de usuarios, historial de escaneos y feedback sobre los productos.
 
 ### Características
-- Escaneo de códigos de barras de productos.
+- Escaneo con ZXing.Net.Maui para cualquier formato de código de barras.
 - Consulta de información nutricional de los productos utilizando la API de OpenFoodFacts.
 - Gestión de usuarios.
 - Registro de historial de escaneos y feedback de productos.
@@ -20,13 +20,11 @@ El proyecto se divide en varias capas para mejorar la organización y la escalab
 - **Lógica de Negocio:** Contiene la lógica para procesar las solicitudes y respuestas.
 - **API y Servicios Externos:** Comunicación con servicios externos como OpenFoodFacts para obtener información adicional de los productos.
 - **Interfaz de Usuario (Frontend):** A desarrollar usando MAUI para iOS y Android.
-- - **Escáner de código de barras:** Implementación con ZXing.Net.Maui para cualquier formato de código de barras.
 
 ## Instalación
 ### Requisitos
 - **Visual Studio** con soporte para MAUI (desarrollo móvil).
 - **SQL Server** para la base de datos.
-- **API de OpenFoodFacts** para la obtención de datos nutricionales.
 - **.NET 7.0** o superior.
 ## Configuración
 Clona el repositorio
