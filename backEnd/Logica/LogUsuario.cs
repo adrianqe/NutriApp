@@ -244,7 +244,7 @@ namespace backEnd.Logica
                 }
                 else
                 {
-                    // Variables de salida del SP
+                    // Variables de salida del procedimientoo (sp)
                     bool? exito = false;
                     string mensaje = "";
 
