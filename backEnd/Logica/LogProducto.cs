@@ -165,6 +165,7 @@ namespace backEnd.Logica
                             producto.Marca,
                             producto.Informacion_Nutricional,
                             producto.nutri_score,
+                            producto.Ingredientes,
                             ref exito,
                             ref mensaje
                         ).ToList();
@@ -215,6 +216,7 @@ namespace backEnd.Logica
             productoFabricado.Marca = productoLinq.Marca;
             productoFabricado.Informacion_Nutricional = productoLinq.Informacion_Nutricional;
             productoFabricado.nutri_score = productoLinq.Nutri_Score;
+            productoFabricado.Ingredientes = productoLinq.Ingredientes;
             return productoFabricado;
         }
         public async Task<List<CodigoBarras>> BuscarProductoPorNombre(string nombreProducto)
@@ -243,7 +245,8 @@ namespace backEnd.Logica
                             Categoria = product.categories != null ? product.categories.ToString() : "",
                             Marca = product.brands != null ? product.brands.ToString() : "",
                             Informacion_Nutricional = product.nutriments != null ? JsonConvert.SerializeObject(product.nutriments) : "",
-                            nutri_score = NutriScore.CalcularCalificacion(JsonConvert.SerializeObject(product.nutriments))
+                            nutri_score = NutriScore.CalcularCalificacion(JsonConvert.SerializeObject(product.nutriments)),
+                            Ingredientes = product["ingredients_text"] != null ? product["ingredients_text"].ToString() : "Información no disponible"
                         };
 
                         productosEncontrados.Add(producto);
