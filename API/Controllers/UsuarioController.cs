@@ -11,12 +11,20 @@ namespace API.Controllers
 {
     public class UsuarioController : ApiController
     {
-        // POST: api/usuario/insertar
+        // POST: api/usuario/registrar
         [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("api/usuario/insertar")]
-        public async Task<ResInsertarUsuario> InsertarUsuario(ReqInsertarUsuario req)
+        [System.Web.Http.Route("api/usuario/registrar")]
+        public async Task<ResInsertarUsuario> RegistrarUsuario(ReqInsertarUsuario req)
         {
-            return await new LogUsuario().InsertarAsync(req);
+            return await new LogUsuario().registrar(req);
+        }
+
+        // POST: api/usuario/verificar
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/usuario/verificar")]
+        public ResVerificarUsuario VerificarUsuario(ReqVerificarUsuario req)
+        {
+            return new LogUsuario().verificar(req);
         }
 
         // PUT: api/usuario/actualizar

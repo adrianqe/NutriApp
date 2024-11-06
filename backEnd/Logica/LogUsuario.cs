@@ -12,7 +12,7 @@ namespace backEnd.Logica
 {
     public class LogUsuario
     {
-        public async Task<ResInsertarUsuario> InsertarAsync(ReqInsertarUsuario req)
+        public async Task<ResInsertarUsuario> registrar(ReqInsertarUsuario req)
         {
             ResInsertarUsuario res = new ResInsertarUsuario();
             EmailService emailService = new EmailService();
@@ -48,14 +48,15 @@ namespace backEnd.Logica
                     string hashedPassword = PasswordHelper.HashContraseña(req.Password);
 
                     // Enviar el correo y esperar el código de verificación
-                    int codigoVerificacion = await emailService.EnviarEmailAsync(req.Email);
+                    int? codigoVerificacion = await emailService.EnviarEmailAsync(req.Email);
 
-                    // Se podria guardar el código de verificación temporalmente en la base de datos, aun pendiente por implementar
+                    // Aquí podrías guardar el código de verificación temporalmente en la base de datos
                     ConectionDataContext miLinq = new ConectionDataContext();
                     miLinq.SP_Registrar_Nuevo_Usuario(
                         req.Nombre,
                         req.Email,
-                        hashedPassword,  // Usar la contraseña encriptada
+                        hashedPassword,  // Guarda contraseña encriptada
+                        codigoVerificacion,  // Guarda el código de verificación
                         ref exito,
                         ref mensaje
                     );
@@ -64,7 +65,7 @@ namespace backEnd.Logica
                     if (exito == true)
                     {
                         res.exito = true;
-                        res.mensaje.Add("Usuario registrado exitosamente. Código de verificación enviado: " + codigoVerificacion); // Para pruebas, temporal
+                        res.mensaje.Add("Usuario registrado exitosamente. Código de verificación enviado." + codigoVerificacion);
                     }
                     else
                     {
@@ -77,6 +78,49 @@ namespace backEnd.Logica
             {
                 res.exito = false;
                 res.mensaje.Add(ex.Message);
+            }
+
+            return res;
+        }
+
+        public ResVerificarUsuario verificar(ReqVerificarUsuario req)
+        {
+            ResVerificarUsuario res = new ResVerificarUsuario();
+            try
+            {
+                if (string.IsNullOrEmpty(req.Email))
+                {
+                    res.exito = false;
+                    res.mensaje.Add("El correo electrónico es requerido.");
+                }
+                else if (req.CodigoVerificacion == null || req.CodigoVerificacion > 9999 || req.CodigoVerificacion < 1000)
+                {
+                    res.exito = false;
+                    res.mensaje.Add("El código de verificación es requerido y debe ser de 4 dígitos.");
+                }
+                else
+                {
+                    bool? exito = false;
+                    string mensaje = "";
+
+                    ConectionDataContext miLinq = new ConectionDataContext();
+                    miLinq.SP_CodigoVerificacion(req.Email, req.CodigoVerificacion, ref exito, ref mensaje);
+
+                    if (exito == true)
+                    {
+                        res.exito = true;
+                    }
+                    else
+                    {
+                        res.exito = false;
+                        res.mensaje.Add(mensaje);  // Aquí se agrega el mensaje devuelto por el SP
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res.exito = false;
+                res.mensaje.Add(ex.Message);  // En caso de que ocurra un error en la lógica
             }
 
             return res;
