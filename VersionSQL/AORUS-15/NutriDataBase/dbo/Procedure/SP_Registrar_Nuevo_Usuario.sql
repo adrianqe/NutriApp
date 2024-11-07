@@ -1,11 +1,11 @@
 ﻿/****** Object:  Procedure [dbo].[SP_Registrar_Nuevo_Usuario]    Committed by VersionSQL https://www.versionsql.com ******/
 
---		Procedimiento para registrar un nuevo usuario
 CREATE PROCEDURE [SP_Registrar_Nuevo_Usuario]
     @Nombre NVARCHAR(100),
     @Email NVARCHAR(150),
     @Password_Hash NVARCHAR(255),
-    @Exito BIT OUTPUT,          
+	@cod_verificacion INT NULL,
+    @Exito BIT OUTPUT,
     @Mensaje NVARCHAR(255) OUTPUT 
 AS
 BEGIN
@@ -16,8 +16,8 @@ BEGIN
     BEGIN TRY
         IF NOT EXISTS (SELECT 1 FROM TB_Usuarios WHERE Email = @Email)
         BEGIN
-            INSERT INTO TB_Usuarios (Nombre, Email, Password_Hash)
-            VALUES (@Nombre, @Email, @Password_Hash);
+            INSERT INTO TB_Usuarios (Nombre, Email, Password_Hash, cod_verificacion)
+            VALUES (@Nombre, @Email, @Password_Hash, @cod_verificacion);
 
             SET @Exito = 1;
             SET @Mensaje = 'Usuario registrado exitosamente.';
@@ -25,7 +25,7 @@ BEGIN
         ELSE
         BEGIN
             SET @Exito = 0;
-            SET @Mensaje = 'El email ya esta registrado.';
+            SET @Mensaje = 'El email ya est  registrado.';
         END
     END TRY
     BEGIN CATCH

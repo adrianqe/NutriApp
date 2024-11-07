@@ -6,6 +6,7 @@ CREATE TABLE [dbo].[TB_Usuarios](
 	[Email] [nvarchar](150) NOT NULL,
 	[Password_Hash] [nvarchar](255) NOT NULL,
 	[Fecha_Registro] [datetime2](7) NOT NULL,
+	[cod_verificacion] [int] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Usuario_ID] ASC
