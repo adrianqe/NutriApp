@@ -135,8 +135,6 @@ namespace backEnd.Logica
             {
                 res.exito = false;
                 res.mensaje.Add("Ocurrió un error en el inicio de sesión.");
-                res.mensaje.Add($"Detalle del error: {ex.Message}");
-                res.mensaje.Add($"StackTrace: {ex.StackTrace}");
             }
 
             return res;
