@@ -179,8 +179,6 @@ namespace backEnd.Logica
             {
                 res.exito = false;
                 res.mensaje.Add("Ocurrió un error en el inicio de sesión.");
-                res.mensaje.Add($"Detalle del error: {ex.Message}");
-                res.mensaje.Add($"StackTrace: {ex.StackTrace}");
             }
 
             return res;
@@ -288,7 +286,7 @@ namespace backEnd.Logica
                 }
                 else
                 {
-                    // Variables de salida del SP
+                    // Variables de salida del procedimientoo (sp)
                     bool? exito = false;
                     string mensaje = "";
 
