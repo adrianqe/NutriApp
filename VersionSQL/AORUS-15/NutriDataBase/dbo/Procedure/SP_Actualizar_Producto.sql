@@ -7,6 +7,7 @@ CREATE PROCEDURE [SP_Actualizar_Producto]
     @Categoria NVARCHAR(50),
     @Marca NVARCHAR(50),
     @Informacion_Nutricional NVARCHAR(MAX),
+	@Ingredientes NVARCHAR(MAX) = NULL,
     @Exito BIT OUTPUT,
     @Mensaje NVARCHAR(255) OUTPUT
 AS
@@ -22,7 +23,8 @@ BEGIN
             SET Nombre = @Nombre,
                 Categoria = @Categoria,
                 Marca = @Marca,
-                Informacion_Nutricional = @Informacion_Nutricional
+                Informacion_Nutricional = @Informacion_Nutricional,
+				Ingredientes = @Ingredientes
             WHERE Producto_ID = @Producto_ID;
 
             SET @Exito = 1;

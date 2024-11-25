@@ -7,9 +7,9 @@ CREATE TABLE [dbo].[TB_Productos](
 	[Categoria] [nvarchar](100) NULL,
 	[Marca] [nvarchar](50) NULL,
 	[Informacion_Nutricional] [nvarchar](max) NULL,
+	[Ingredientes] [nvarchar](max) NULL,
 	[Nutri_Score] [int] NULL,
 	[Fecha_Registro] [datetime2](7) NOT NULL,
-	[Ingredientes] [nvarchar](max) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Producto_ID] ASC

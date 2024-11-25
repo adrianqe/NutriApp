@@ -1,6 +1,8 @@
 ﻿/****** Object:  Procedure [dbo].[SP_Escanear_Codigo]    Committed by VersionSQL https://www.versionsql.com ******/
 
--- Procedimiento para escanear un código de barras y devolver el producto
+/*			STORE PROCEDURES		*/
+
+-- Procedimiento para escanear un codigo de barras y devolver el producto
 CREATE PROCEDURE [SP_Escanear_Codigo]
     @Codigo_Barras NVARCHAR(50),
     @Nombre NVARCHAR(100) = NULL, 

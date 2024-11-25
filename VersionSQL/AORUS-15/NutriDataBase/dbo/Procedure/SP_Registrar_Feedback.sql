@@ -15,14 +15,14 @@ BEGIN
     SET @Mensaje = '';
 
     BEGIN TRY
-        -- Verificar que la calificaci�n est� en el rango permitido
+        -- Verificar que la calificaci n est  en el rango permitido
         IF @Calificacion >= 1 AND @Calificacion <= 5
         BEGIN
             -- Verificar si el usuario y el producto existen
             IF EXISTS (SELECT 1 FROM TB_Usuarios WHERE Usuario_ID = @Usuario_ID) AND
                EXISTS (SELECT 1 FROM TB_Productos WHERE Producto_ID = @Producto_ID)
             BEGIN
-                -- Registrar la rese�a
+                -- Registrar la rese a
                 INSERT INTO TB_Feedback (Usuario_ID, Producto_ID, Calificacion, Comentario)
                 VALUES (@Usuario_ID, @Producto_ID, @Calificacion, @Comentario);
 

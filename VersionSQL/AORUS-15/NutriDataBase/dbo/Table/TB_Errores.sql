@@ -3,9 +3,9 @@
 CREATE TABLE [dbo].[TB_Errores](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[SEVERIDAD] [int] NOT NULL,
-	[STORE_PROCEDURE] [varchar](255) NOT NULL,
+	[STORE_PROCEDURE] [nvarchar](255) NOT NULL,
 	[NUMERO] [int] NOT NULL,
-	[DESCRIPCION] [varchar](255) NOT NULL,
+	[DESCRIPCION] [nvarchar](255) NOT NULL,
 	[LINEA] [int] NOT NULL,
 	[FECHA_HORA] [datetime2](7) NOT NULL,
 PRIMARY KEY CLUSTERED 
