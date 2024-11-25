@@ -8,6 +8,6 @@ namespace backEnd.Entidades
 {
     public class ResBuscarProducto : ResBase
     {
-        public List<CodigoBarras> codigoBarras { get; set; } = new List<CodigoBarras>();
+        public List<CodigoBarras> ProductosEncontrados { get; set; } = new List<CodigoBarras>();
     }
 }

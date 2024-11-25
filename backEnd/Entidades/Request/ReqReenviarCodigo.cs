@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace backEnd.Entidades
 {
-    public class ReqEscanearCodigo
+    public class ReqReenviarCodigo
     {
-        public string Codigo_Barras { get; set; }
-        public int UsuarioID { get; set; }
+        public string Email { get; set; }
     }
 }

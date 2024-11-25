@@ -14,19 +14,19 @@ namespace backEnd.Logica
         private static readonly HttpClient client = new HttpClient(); // Se crea un cliente HTTP para hacer las solicitudes a OpenFoodFacts
         private NutriScore NutriScore = new NutriScore();
 
-        public async Task<ResEscanearCodigo> escanear(ReqEscanearCodigo req)
+        public async Task<ResEscanearCodigo> escanear(ReqEscanearCodigo req) // Se crea  un método asíncrono para escanear el código de barras
         {
             ResEscanearCodigo res = new ResEscanearCodigo();
             CodigoBarras producto = null;
 
-            producto = await ObtenerProductoDeOpenFoodFacts(req.Codigo_Barras);
+            producto = await ObtenerProductoDeOpenFoodFacts(req.Codigo_Barras); // Se obtiene el producto de la API OpenFoodFacts
 
             try
             {
                 if (producto == null)
                 {
                     res.exito = false;
-                    res.mensaje.Add("Request nulo");
+                    res.mensaje.Add("Producto no encontrado");
                 }
                 else if (string.IsNullOrEmpty(producto.Codigo_Barras))
                 {
@@ -67,12 +67,28 @@ namespace backEnd.Logica
                         int productoID = productoEscaneado.First().Producto_ID;
                         bool? exitoHistorial = false;
                         string mensajeHistorial = "";
+                        miLinq.SP_HistorialUsuario(req.UsuarioID, productoID, ref exitoHistorial, ref mensajeHistorial);
+
+                        // Agregar el mensaje del historial a la respuesta si falló
+                        if (exitoHistorial == false)
+                        {
+                            res.exito = false;
+                            res.mensaje.Add(mensajeHistorial);
+                        }
+
+                        // Mapear y detectar alérgenos
                         miLinq.SP_HistorialUsuario(1, productoID, ref exitoHistorial, ref mensajeHistorial); // El 1 es el ID del usuario, este valor debe ser dinámico
 
                         // Mapear el resultado a la respuesta
                         foreach (SP_Escanear_CodigoResult unProductoEscaneado in productoEscaneado)
                         {
-                            res.codigoBarras.Add(factoriaCodigoBarras(unProductoEscaneado));
+                            var codigoBarras = factoriaCodigoBarras(unProductoEscaneado);
+
+                            // Detectar alérgenos para este producto
+                            codigoBarras.alergenos = DetectarAlergias(req.UsuarioID, unProductoEscaneado.Ingredientes);
+
+                            // Añadir el producto con alérgenos detectados a la respuesta
+                            res.codigoBarras.Add(codigoBarras);
                         }
                     }
                     else
@@ -140,6 +156,45 @@ namespace backEnd.Logica
                 Console.WriteLine(ex.Message);
                 return null;
             }
+        }
+
+
+        public List<string> DetectarAlergias(int userID, string ingredientes)
+        {
+            var alergiasDetectadas = new List<string>();
+
+            if (string.IsNullOrEmpty(ingredientes))
+                return alergiasDetectadas; // Si no hay ingredientes, devuelve una lista vacía
+
+            // Convertir los ingredientes a minúsculas para garantizar insensibilidad a mayúsculas
+            ingredientes = ingredientes.ToLowerInvariant();
+
+            using (var context = new ConectionDataContext())
+            {
+                // Obtener las alergias del usuario
+                var alergiasUsuario = context.SP_Consultar_Usuario_Alergias(userID);
+
+                foreach (var alergia in alergiasUsuario)
+                {
+                    // Dividir las palabras clave por comas
+                    var palabrasClave = alergia.Palabras_Clave.Split(',');
+
+                    foreach (var palabraClave in palabrasClave)
+                    {
+                        // Limpiar espacios en blanco y convertir a minúsculas
+                        var palabra = palabraClave.Trim().ToLowerInvariant();
+
+                        // Verificar si la palabra clave está en los ingredientes
+                        if (!string.IsNullOrEmpty(palabra) && ingredientes.Contains(palabra))
+                        {
+                            alergiasDetectadas.Add(alergia.Nombre); // Agregar el nombre de la alergia detectada
+                            break; // Detener la búsqueda para esta alergia si se encuentra una palabra clave
+                        }
+                    }
+                }
+            }
+
+            return alergiasDetectadas;
         }
     }
 }
