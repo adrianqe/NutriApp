@@ -77,6 +77,9 @@ namespace backEnd.Logica
                         }
 
                         // Mapear y detectar alérgenos
+                        miLinq.SP_HistorialUsuario(1, productoID, ref exitoHistorial, ref mensajeHistorial); // El 1 es el ID del usuario, este valor debe ser dinámico
+
+                        // Mapear el resultado a la respuesta
                         foreach (SP_Escanear_CodigoResult unProductoEscaneado in productoEscaneado)
                         {
                             var codigoBarras = factoriaCodigoBarras(unProductoEscaneado);
@@ -155,6 +158,7 @@ namespace backEnd.Logica
             }
         }
 
+
         public List<string> DetectarAlergias(int userID, string ingredientes)
         {
             var alergiasDetectadas = new List<string>();
@@ -192,7 +196,5 @@ namespace backEnd.Logica
 
             return alergiasDetectadas;
         }
-
-
     }
 }
