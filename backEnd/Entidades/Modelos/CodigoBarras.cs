@@ -14,5 +14,7 @@ namespace backEnd.Entidades
         public string Marca { get; set; }
         public string Informacion_Nutricional { get; set; }
         public int? nutri_score { get; set; }
+        public string Ingredientes { get; set; }
+        public List<string> alergenos { get; set; } = new List<string>();
     }
 }

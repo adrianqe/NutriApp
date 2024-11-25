@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace backEnd.Logica
 {
@@ -13,19 +14,19 @@ namespace backEnd.Logica
         private static readonly HttpClient client = new HttpClient(); // Se crea un cliente HTTP para hacer las solicitudes a OpenFoodFacts
         private NutriScore NutriScore = new NutriScore();
 
-        public async Task<ResEscanearCodigo> escanear(ReqEscanearCodigo req)
+        public async Task<ResEscanearCodigo> escanear(ReqEscanearCodigo req) // Se crea  un método asíncrono para escanear el código de barras
         {
             ResEscanearCodigo res = new ResEscanearCodigo();
             CodigoBarras producto = null;
 
-            producto = await ObtenerProductoDeOpenFoodFacts(req.Codigo_Barras);
+            producto = await ObtenerProductoDeOpenFoodFacts(req.Codigo_Barras); // Se obtiene el producto de la API OpenFoodFacts
 
             try
             {
                 if (producto == null)
                 {
                     res.exito = false;
-                    res.mensaje.Add("Request nulo");
+                    res.mensaje.Add("Producto no encontrado");
                 }
                 else if (string.IsNullOrEmpty(producto.Codigo_Barras))
                 {
@@ -52,6 +53,7 @@ namespace backEnd.Logica
                         producto.Marca,
                         producto.Informacion_Nutricional,
                         producto.nutri_score,
+                        producto.Ingredientes,
                         ref exito,
                         ref mensaje
                     ).ToList();
@@ -61,10 +63,29 @@ namespace backEnd.Logica
                     {
                         res.exito = true;
 
-                        // Mapear el resultado a la respuesta
+                        // Registrar en el historial el producto escaneado
+                        int productoID = productoEscaneado.First().Producto_ID;
+                        bool? exitoHistorial = false;
+                        string mensajeHistorial = "";
+                        miLinq.SP_HistorialUsuario(req.UsuarioID, productoID, ref exitoHistorial, ref mensajeHistorial);
+
+                        // Agregar el mensaje del historial a la respuesta si falló
+                        if (exitoHistorial == false)
+                        {
+                            res.exito = false;
+                            res.mensaje.Add(mensajeHistorial);
+                        }
+
+                        // Mapear y detectar alérgenos
                         foreach (SP_Escanear_CodigoResult unProductoEscaneado in productoEscaneado)
                         {
-                            res.codigoBarras.Add(factoriaCodigoBarras(unProductoEscaneado));
+                            var codigoBarras = factoriaCodigoBarras(unProductoEscaneado);
+
+                            // Detectar alérgenos para este producto
+                            codigoBarras.alergenos = DetectarAlergias(req.UsuarioID, unProductoEscaneado.Ingredientes);
+
+                            // Añadir el producto con alérgenos detectados a la respuesta
+                            res.codigoBarras.Add(codigoBarras);
                         }
                     }
                     else
@@ -93,6 +114,7 @@ namespace backEnd.Logica
             productoFabricado.Marca = productoLinq.Marca;
             productoFabricado.Informacion_Nutricional = productoLinq.Informacion_Nutricional;
             productoFabricado.nutri_score = productoLinq.Nutri_Score;
+            productoFabricado.Ingredientes = productoLinq.Ingredientes;
             return productoFabricado;
         }
 
@@ -118,7 +140,8 @@ namespace backEnd.Logica
                         Categoria = productData.product.categories != null ? productData.product.categories.ToString() : "",
                         Marca = productData.product.brands != null ? productData.product.brands.ToString() : "",
                         Informacion_Nutricional = productData.product.nutriments != null ? JsonConvert.SerializeObject(productData.product.nutriments) : "",
-                        nutri_score = NutriScore.CalcularCalificacion(JsonConvert.SerializeObject(productData.product.nutriments))
+                        nutri_score = NutriScore.CalcularCalificacion(JsonConvert.SerializeObject(productData.product.nutriments)),
+                        Ingredientes = productData.product.ingredients_text != null ? productData.product.ingredients_text.ToString() : ""
                     };
 
                     return producto;
@@ -132,91 +155,44 @@ namespace backEnd.Logica
             }
         }
 
-        private int CalcularCalificacionNutricional(string informacionNutricionalJson)
+        public List<string> DetectarAlergias(int userID, string ingredientes)
         {
-            dynamic infoNutricional = JsonConvert.DeserializeObject(informacionNutricionalJson);
+            var alergiasDetectadas = new List<string>();
 
-            int puntaje = 0;
-            int factoresConsiderados = 0;
+            if (string.IsNullOrEmpty(ingredientes))
+                return alergiasDetectadas; // Si no hay ingredientes, devuelve una lista vacía
 
-            // Evaluar las calorías: 1 = Bueno, 5 = Malo
-            if (infoNutricional["energy-kcal_value"] != null)
+            // Convertir los ingredientes a minúsculas para garantizar insensibilidad a mayúsculas
+            ingredientes = ingredientes.ToLowerInvariant();
+
+            using (var context = new ConectionDataContext())
             {
-                double calorias = infoNutricional["energy-kcal_value"];
-                if (calorias < 100) puntaje += 1; // Bajo en calorías
-                else if (calorias < 200) puntaje += 2;
-                else if (calorias < 300) puntaje += 3;
-                else if (calorias < 400) puntaje += 4;
-                else puntaje += 5; // Alto en calorías
-                factoresConsiderados++;
+                // Obtener las alergias del usuario
+                var alergiasUsuario = context.SP_Consultar_Usuario_Alergias(userID);
+
+                foreach (var alergia in alergiasUsuario)
+                {
+                    // Dividir las palabras clave por comas
+                    var palabrasClave = alergia.Palabras_Clave.Split(',');
+
+                    foreach (var palabraClave in palabrasClave)
+                    {
+                        // Limpiar espacios en blanco y convertir a minúsculas
+                        var palabra = palabraClave.Trim().ToLowerInvariant();
+
+                        // Verificar si la palabra clave está en los ingredientes
+                        if (!string.IsNullOrEmpty(palabra) && ingredientes.Contains(palabra))
+                        {
+                            alergiasDetectadas.Add(alergia.Nombre); // Agregar el nombre de la alergia detectada
+                            break; // Detener la búsqueda para esta alergia si se encuentra una palabra clave
+                        }
+                    }
+                }
             }
 
-            // Evaluar la grasa saturada
-            if (infoNutricional["saturated-fat_value"] != null)
-            {
-                double grasaSaturada = infoNutricional["saturated-fat_value"];
-                if (grasaSaturada < 1) puntaje += 1; // Bajo en grasa saturada
-                else if (grasaSaturada < 5) puntaje += 2;
-                else if (grasaSaturada < 10) puntaje += 3;
-                else if (grasaSaturada < 15) puntaje += 4;
-                else puntaje += 5; // Alto en grasa saturada
-                factoresConsiderados++;
-            }
-
-            // Evaluar los azúcares
-            if (infoNutricional["sugars_value"] != null)
-            {
-                double azucares = infoNutricional["sugars_value"];
-                if (azucares < 5) puntaje += 1; // Bajo en azúcar
-                else if (azucares < 10) puntaje += 2;
-                else if (azucares < 20) puntaje += 3;
-                else if (azucares < 30) puntaje += 4;
-                else puntaje += 5; // Alto en azúcar
-                factoresConsiderados++;
-            }
-
-            // Evaluar la sal
-            if (infoNutricional["salt_value"] != null)
-            {
-                double sal = infoNutricional["salt_value"];
-                if (sal < 0.3) puntaje += 1; // Bajo en sal
-                else if (sal < 0.7) puntaje += 2;
-                else if (sal < 1) puntaje += 3;
-                else if (sal < 1.5) puntaje += 4;
-                else puntaje += 5; // Alto en sal
-                factoresConsiderados++;
-            }
-
-            // Evaluar las proteínas
-            if (infoNutricional["proteins_value"] != null)
-            {
-                double proteinas = infoNutricional["proteins_value"];
-                if (proteinas > 10) puntaje += 1; // Alto en proteínas
-                else puntaje += 3; // Bajo en proteínas
-                factoresConsiderados++;
-            }
-
-            // Evaluar la fibra
-            if (infoNutricional["fiber_value"] != null)
-            {
-                double fibra = infoNutricional["fiber_value"];
-                if (fibra > 5) puntaje += 1; // Alto en fibra
-                else puntaje += 3; // Bajo en fibra
-                factoresConsiderados++;
-            }
-
-            // Calcular el promedio de la puntuación
-            if (factoresConsiderados > 0)
-            {
-                double promedio = (double)puntaje / factoresConsiderados;
-
-                // Asegurar que el puntaje esté entre 1 y 5
-                return Math.Max(1, Math.Min(5, (int)Math.Ceiling(promedio)));
-            }
-
-            // Si no se evaluaron factores, devolver un puntaje neutro de 3
-            return 3;
+            return alergiasDetectadas;
         }
+
 
     }
 }

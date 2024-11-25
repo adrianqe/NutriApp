@@ -7,8 +7,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-
 
 namespace backEnd.Logica
 {
@@ -44,7 +42,6 @@ namespace backEnd.Logica
                     res.exito = false;
                     res.mensaje.Add("El nombre del producto no puede ser nulo o vacío");
                 }
-
                 else
                 {
                     bool? exito = false;
@@ -57,6 +54,7 @@ namespace backEnd.Logica
                         req.Categoria,
                         req.Marca,
                         req.Informacion_Nutricional,
+                        req.Ingredientes,
                         ref exito,
                         ref mensaje
                     );
@@ -165,6 +163,7 @@ namespace backEnd.Logica
                             producto.Marca,
                             producto.Informacion_Nutricional,
                             producto.nutri_score,
+                            producto.Ingredientes,
                             ref exito,
                             ref mensaje
                         ).ToList();
@@ -174,7 +173,7 @@ namespace backEnd.Logica
                             // Mapear y agregar cada producto encontrado o insertado al resultado
                             foreach (SP_Escanear_CodigoResult unProductoBuscado in productoEscaneado)
                             {
-                                res.codigoBarras.Add(factoriaCodigoBarras(unProductoBuscado));
+                                res.ProductosEncontrados.Add(factoriaCodigoBarras(unProductoBuscado));
                             }
                         }
                         else
@@ -184,7 +183,7 @@ namespace backEnd.Logica
                     }
 
                     // Si al menos un producto fue procesado correctamente
-                    if (res.codigoBarras.Any())
+                    if (res.ProductosEncontrados.Any())
                     {
                         res.exito = true;
                     }
@@ -215,6 +214,7 @@ namespace backEnd.Logica
             productoFabricado.Marca = productoLinq.Marca;
             productoFabricado.Informacion_Nutricional = productoLinq.Informacion_Nutricional;
             productoFabricado.nutri_score = productoLinq.Nutri_Score;
+            productoFabricado.Ingredientes = productoLinq.Ingredientes;
             return productoFabricado;
         }
         public async Task<List<CodigoBarras>> BuscarProductoPorNombre(string nombreProducto)
@@ -243,7 +243,8 @@ namespace backEnd.Logica
                             Categoria = product.categories != null ? product.categories.ToString() : "",
                             Marca = product.brands != null ? product.brands.ToString() : "",
                             Informacion_Nutricional = product.nutriments != null ? JsonConvert.SerializeObject(product.nutriments) : "",
-                            nutri_score = NutriScore.CalcularCalificacion(JsonConvert.SerializeObject(product.nutriments))
+                            nutri_score = NutriScore.CalcularCalificacion(JsonConvert.SerializeObject(product.nutriments)),
+                            Ingredientes = product["ingredients_text"] != null ? product["ingredients_text"].ToString() : "Información no disponible"
                         };
 
                         productosEncontrados.Add(producto);
