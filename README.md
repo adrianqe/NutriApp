@@ -29,5 +29,3 @@ El proyecto se divide en varias capas para mejorar la organización y la escalab
 ## Configuración
 Clona el repositorio
 `git clone https://github.com/adrianqe/NutriApp.git`
-## Licencia
-Este proyecto está bajo la Licencia MIT. Puedes ver más detalles en el archivo LICENSE.
