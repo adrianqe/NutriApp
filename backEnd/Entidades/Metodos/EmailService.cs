@@ -10,7 +10,7 @@ namespace backEnd.Entidades
     {
         public async Task<int> EnviarEmailAsync(string destinatario)
         {
-            // Generar el código de verificación
+            // Generar el cÃ³digo de verificaciÃ³n
             Random random = new Random();
             int numeroVerificar = random.Next(1000, 9999);
 
@@ -18,15 +18,24 @@ namespace backEnd.Entidades
                 <html>
                     <body style='font-family: Arial, sans-serif;'>
                         <div style='max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>
-                            <h2 style='color: #4CAF50; text-align: center;'>NutriApp - Verificación de Cuenta</h2>
+                            <h2 style='color: #4CAF50; text-align: center;'>NutriApp - Verificaciï¿½n de Cuenta</h2>
                             <p>Hola,</p>
-                            <p>Gracias por registrarte en NutriApp. Para completar tu registro, usa el siguiente código de verificación:</p>
+                            <p>Gracias por registrarte en NutriApp. Para completar tu registro, usa el siguiente cï¿½digo de verificaciï¿½n:</p>
                             <div style='text-align: center; margin: 20px;'>
                                 <span style='font-size: 24px; font-weight: bold; color: #4CAF50;'>{numeroVerificar}</span>
                             </div>
-                            <p>Este código es válido solo por un tiempo limitado. Si no has solicitado este código, ignora este mensaje.</p>
-                            <p>¡Gracias por elegir NutriApp!</p>
-                            <p style='font-size: 12px; color: #888;'>Este es un correo generado automáticamente, por favor, no respondas a este mensaje.</p>
+                            <p>Este cï¿½digo es vï¿½lido solo por un tiempo limitado. Si no has solicitado este cï¿½digo, ignora este mensaje.</p>
+                            <p>ï¿½Gracias por elegir NutriApp!</p>
+                            <p style='font-size: 12px; color: #888;'>Este es un correo generado automï¿½ticamente, por favor, no respondas a este mensaje.</p>
+                            <h2 style='color: #4CAF50; text-align: center;'>NutriApp - VerificaciÃ³n de Cuenta</h2>
+                            <p>Hola,</p>
+                            <p>Gracias por registrarte en NutriApp. Para completar tu registro, usa el siguiente cÃ³digo de verificaciÃ³n:</p>
+                            <div style='text-align: center; margin: 20px;'>
+                                <span style='font-size: 24px; font-weight: bold; color: #4CAF50;'>{numeroVerificar}</span>
+                            </div>
+                            <p>Este cÃ³digo es vÃ¡lido solo por un tiempo limitado. Si no has solicitado este cÃ³digo, ignora este mensaje.</p>
+                            <p>Â¡Gracias por elegir NutriApp!</p>
+                            <p style='font-size: 12px; color: #888;'>Este es un correo generado automÃ¡ticamente, por favor, no respondas a este mensaje.</p>
                         </div>
                     </body>
                 </html>";
@@ -34,7 +43,9 @@ namespace backEnd.Entidades
             MailMessage mail = new MailMessage
             {
                 From = new MailAddress("nutri.app.team@gmail.com"),
-                Subject = "Código de verificación de NutriApp",
+
+                Subject = "Cï¿½digo de verificaciï¿½n de NutriApp",
+
                 Body = bodyHtml,
                 SubjectEncoding = Encoding.UTF8,
                 BodyEncoding = Encoding.UTF8,
@@ -44,22 +55,15 @@ namespace backEnd.Entidades
 
             SmtpClient client = new SmtpClient
             {
-                Credentials = new NetworkCredential("nutri.app.team@gmail.com", "PasswordHere"), // Cambiar a contraseña generada por Google
-                Port = 587,
-                EnableSsl = true,
-                Host = "smtp.gmail.com"
-            };
-
-            try
-            {
+                Credentials = new NetworkCredential("nutri.app.team@gmail.com", "contraseÃ±a de aplicacion"), // Cambiar a contraseÃ±a generada por Google
                 await client.SendMailAsync(mail);
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al enviar el correo electrónico: " + ex.Message);
+                throw new Exception("Error al enviar el correo electrï¿½nico: " + ex.Message);
             }
 
-            // Retornar el código de verificación para que se pueda almacenar y comparar
+            // Retornar el cï¿½digo de verificaciï¿½n para que se pueda almacenar y comparar
             return numeroVerificar;
         }
     }
