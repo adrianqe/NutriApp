@@ -8,7 +8,9 @@ NutriApp permite a los usuarios escanear productos utilizando la cámara de un d
 ### Características
 - Escaneo con ZXing.Net.Maui para cualquier formato de código de barras.
 - Consulta de información nutricional de los productos utilizando la API de OpenFoodFacts.
+- Registro de imágenes con Google Cloud SEO
 - Gestión de usuarios.
+- Manejo de alérgenos personalizados según el usuario.
 - Registro de historial de escaneos y feedback de productos.
 - Sistema de manejo de errores en la base de datos para garantizar la fiabilidad del sistema.
 
