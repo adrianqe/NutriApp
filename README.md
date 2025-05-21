@@ -20,8 +20,17 @@ El proyecto se divide en varias capas para mejorar la organización y la escalab
 - **Lógica de Negocio:** Contiene la lógica para procesar las solicitudes y respuestas.
 - **API y Servicios Externos:** Comunicación con servicios externos como OpenFoodFacts para obtener información adicional de los productos.
 - **Interfaz de Usuario (Frontend):** A desarrollar usando MAUI para iOS y Android.
+## Capturas
+![Bienvenido a NutriApp](https://github.com/user-attachments/assets/9651066a-c989-4082-a0b6-fb696c967b89)
+![Inicio de Sesion NutriApp](https://github.com/user-attachments/assets/0135ce17-7ac8-4e99-bd80-53dd66ac7113)
+![Escanear Producto](https://github.com/user-attachments/assets/8054ee40-d375-4dcf-a084-d59e3910c0b2)
+![PringlesQueso Producto Escaneado](https://github.com/user-attachments/assets/896cfc26-fac2-49d5-9485-762b75753764)
+![Feedback de Usuarios](https://github.com/user-attachments/assets/15ba2901-2897-4a4a-8243-c5f639778442)
+![Alergenos](https://github.com/user-attachments/assets/094aae86-4e96-4add-bbf8-333f769c0655)
+
 
 ### Requisitos
+
 - **Visual Studio** con soporte para MAUI (desarrollo móvil).
 - **SQL Server** para la base de datos.
 - **.NET 7.0** o superior.
