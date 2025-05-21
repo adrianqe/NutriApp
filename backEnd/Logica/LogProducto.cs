@@ -155,34 +155,60 @@ namespace backEnd.Logica
 
                     foreach (var producto in productos)
                     {
-                        // Enviar cada producto al SP para almacenarlo o verificar si ya existe
-                        var productoEscaneado = miLinq.SP_Escanear_Codigo(
-                            producto.Codigo_Barras,
-                            producto.Nombre,
-                            producto.Categoria,
-                            producto.Marca,
-                            producto.Informacion_Nutricional,
-                            producto.nutri_score,
-                            producto.Ingredientes,
-                            ref exito,
-                            ref mensaje
-                        ).ToList();
-
-                        if (exito == true && productoEscaneado.Any())
+                        // Buscar imagen para el producto
+                        try
                         {
-                            // Mapear y agregar cada producto encontrado o insertado al resultado
-                            foreach (SP_Escanear_CodigoResult unProductoBuscado in productoEscaneado)
+                            // Verificar si el producto ya tiene imagen
+                            var productoEscaneado = miLinq.SP_Escanear_Codigo(
+                                producto.Codigo_Barras,
+                                producto.Nombre,
+                                producto.Categoria,
+                                producto.Marca,
+                                producto.Informacion_Nutricional,
+                                producto.nutri_score,
+                                producto.Ingredientes,
+                                producto.Imagen, // Enviar la imagen existente
+                                ref exito,
+                                ref mensaje
+                            ).ToList();
+
+                            if (exito == true && productoEscaneado.Any())
                             {
-                                res.ProductosEncontrados.Add(factoriaCodigoBarras(unProductoBuscado));
+                                var unProductoBuscado = productoEscaneado.First();
+
+                                if (string.IsNullOrEmpty(unProductoBuscado.Imagen))
+                                {
+                                    // Si no tiene imagen, buscarla y actualizar en la base de datos
+                                    var nuevaImagen = await new ImageService().BuscarImagenAsync(producto.Nombre, producto.Marca);
+
+                                    miLinq.SP_ActualizarImagen(unProductoBuscado.Producto_ID, nuevaImagen, ref exito, ref mensaje);
+                                    producto.Imagen = nuevaImagen;
+                                }
+                                else
+                                {
+                                    // Si ya tiene imagen, usar la almacenada
+                                    producto.Imagen = unProductoBuscado.Imagen;
+                                }
+
+                                // Mapear el producto y agregarlo al resultado
+                                var productoMapeado = factoriaCodigoBarras(unProductoBuscado);
+                                productoMapeado.Imagen = producto.Imagen;
+                                productoMapeado.productoID = unProductoBuscado.Producto_ID;
+
+                                res.ProductosEncontrados.Add(productoMapeado);
+                            }
+                            else
+                            {
+                                res.mensaje.Add(mensaje);
                             }
                         }
-                        else
+                        catch
                         {
-                            res.mensaje.Add(mensaje);
+                            producto.Imagen = string.Empty; // Imagen predeterminada si ocurre un error
                         }
                     }
 
-                    // Si al menos un producto fue procesado correctamente
+                    // Verificar si al menos un producto fue procesado correctamente
                     if (res.ProductosEncontrados.Any())
                     {
                         res.exito = true;
@@ -202,6 +228,7 @@ namespace backEnd.Logica
 
             return res;
         }
+
 
 
         // Método para mapear el resultado del SP a la entidad CodigoBarras

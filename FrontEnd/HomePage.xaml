@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="NutriApp.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+    BackgroundColor="Transparent"
+    IconImageSource="banner.png">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20,0,20,20" Spacing="10">
+
+                <Grid Grid.Row="0" ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Frame
+                        Grid.Column="0"
+                        Padding="0"
+                        CornerRadius="20"
+                        HeightRequest="40"
+                        WidthRequest="40">
+                        <Image
+                            x:Name="imgPerfil"
+                            Aspect="Fill"
+                            Source="perfil.png" />
+                    </Frame>
+
+                    <Label
+                        x:Name="lblNombreUsuario"
+                        Grid.Column="1"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="Usuario"
+                        VerticalOptions="Center" />
+                </Grid>
+
+                <Frame
+                    Padding="10"
+                    BackgroundColor="#F0F0F0"
+                    CornerRadius="10"
+                    HasShadow="True">
+                    <HorizontalStackLayout Spacing="10">
+                        <Entry
+                            x:Name="txtProducto"
+                            HorizontalOptions="FillAndExpand"
+                            Placeholder="Escribe el nombre del producto"
+                            PlaceholderColor="#B0B0B0"
+                            TextColor="Black" />
+                        <ImageButton
+                            Clicked="OnBuscarProductoClicked"
+                            HeightRequest="20"
+                            HorizontalOptions="End"
+                            Source="lupa.png"
+                            VerticalOptions="Center"
+                            WidthRequest="20" />
+                    </HorizontalStackLayout>
+                </Frame>
+
+                <Label
+                    x:Name="lblResultado"
+                    IsVisible="False"
+                    TextColor="Black" />
+
+                <ListView
+                    x:Name="listProductos"
+                    IsVisible="False"
+                    ItemSelected="OnProductoSeleccionado">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid Padding="15">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="{Binding Nombre}" />
+                                    <Label
+                                        Grid.Row="1"
+                                        FontSize="14"
+                                        Text="{Binding Marca}"
+                                        TextColor="Gray" />
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Frame
+                    Padding="10"
+                    BackgroundColor="#E5E5E5"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="CenterAndExpand">
+                    <Grid>
+                        <VerticalStackLayout>
+                            <Label
+                                x:Name="lblBarcodeResult"
+                                Margin="3"
+                                FontSize="20"
+                                HorizontalOptions="Center"
+                                Text="Escanea un codigo de barras!"
+                                TextColor="Black"
+                                VerticalOptions="Center" />
+                            <Frame
+                                Padding="0"
+                                CornerRadius="25"
+                                HasShadow="False"
+                                IsClippedToBounds="True">
+                                <zxing:CameraBarcodeReaderView
+                                    x:Name="barcodeReader"
+                                    BarcodesDetected="barcodeReader_BarcodesDetected"
+                                    HeightRequest="425"
+                                    IsDetecting="True"
+                                    IsTorchOn="False"
+                                    WidthRequest="350" />
+                            </Frame>
+                        </VerticalStackLayout>
+                        <Image
+                            Aspect="Center"
+                            Source="scanner.png"
+                            TranslationY="25" />
+                    </Grid>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Frame
+            Grid.Row="1"
+            Margin="20,0,20,20"
+            Padding="10"
+            BackgroundColor="#F0EDED"
+            CornerRadius="35"
+            HasShadow="True"
+            HorizontalOptions="FillAndExpand"
+            VerticalOptions="End">
+            <HorizontalStackLayout HorizontalOptions="CenterAndExpand" Spacing="40">
+                <StackLayout HorizontalOptions="Center">
+                    <ImageButton
+                        Clicked="OnHistorialClicked"
+                        HeightRequest="20"
+                        Source="pasado.png"
+                        WidthRequest="20" />
+                    <Label
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="Historial" />
+                </StackLayout>
+                <StackLayout HorizontalOptions="Center">
+                    <ImageButton
+                        Clicked="OnHomeClicked"
+                        HeightRequest="20"
+                        Source="hogar.png"
+                        WidthRequest="20" />
+                    <Label
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="Home" />
+                </StackLayout>
+                <StackLayout HorizontalOptions="Center">
+                    <ImageButton
+                        Clicked="OnPerfilClicked"
+                        HeightRequest="20"
+                        Source="usuarioce.png"
+                        WidthRequest="20" />
+                    <Label
+                        FontSize="Small"
+                        HorizontalOptions="Center"
+                        Text="Perfil" />
+                </StackLayout>
+            </HorizontalStackLayout>
+        </Frame>
+    </Grid>
+</ContentPage>

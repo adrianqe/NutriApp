@@ -11,7 +11,7 @@ public class PasswordHelper
         new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
 
         // Derivar el hash de la contraseña
-        var pbkdf2 = new Rfc2898DeriveBytes(contraseña, salt, 10000); 
+        var pbkdf2 = new Rfc2898DeriveBytes(contraseña, salt, 10000);
         byte[] hash = pbkdf2.GetBytes(20); // Generar el hash de 20 bytes
 
         // Combinar el salt y el hash
@@ -41,10 +41,10 @@ public class PasswordHelper
         {
             if (hashBytes[i + 16] != hash[i])
             {
-                return false; 
+                return false;
             }
         }
 
-        return true; 
+        return true;
+    }
 }
-// Obviamente no lo hice yo, creditos al grande de Skadoosh que lo subio a stack en 2022 <3

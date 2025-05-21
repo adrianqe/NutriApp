@@ -1,4 +1,4 @@
-﻿using backEnd.DataAccess;
+using backEnd.DataAccess;
 using backEnd.Entidades;
 using backEnd.Request;
 using backEnd.Response;
@@ -44,6 +44,7 @@ namespace backEnd.Logica
                 {
                     bool? exito = false;
                     string mensaje = "";
+                    int? usuario_ID = null;
 
                     // Encriptar la contraseña antes de almacenarla
                     string hashedPassword = PasswordHelper.HashContraseña(req.Password);
@@ -59,7 +60,9 @@ namespace backEnd.Logica
                         hashedPassword,  // Guarda contraseña encriptada
                         codigoVerificacion,  // Guarda el código de verificación
                         ref exito,
-                        ref mensaje
+                        ref mensaje,
+                        ref usuario_ID  // Parámetro de salida para obtener el Usuario_ID
+
                     );
 
                     // Evaluar el resultado del SP
@@ -113,6 +116,7 @@ namespace backEnd.Logica
                         res.mensaje.Add("Usuario registrado exitosamente. Código de verificación enviado al email.");
                         int codigoVerificacion = await emailService.EnviarEmailAsync(req.Email);
                         res.codigoVerificacion = codigoVerificacion;
+                        res.Usuario_ID = usuario_ID; // Asignar el ID del usuario en la respuesta
                     }
                     else
                     {
@@ -198,10 +202,9 @@ namespace backEnd.Logica
             return res;
         }
 
-
         public ResIniciarSesionUsuario iniciarSesion(ReqIniciarSesionUsuario req)
         {
-            ResIniciarSesionUsuario res = new ResIniciarSesionUsuario();
+            ResIniciarSesionUsuario res = new ResIniciarSesionUsuario { mensaje = new List<string>() };
 
             try
             {
@@ -212,47 +215,106 @@ namespace backEnd.Logica
                     res.mensaje.Add("El correo electrónico es requerido.");
                     return res;
                 }
-                else if (string.IsNullOrEmpty(req.Password))
+                if (string.IsNullOrEmpty(req.Password))
                 {
                     res.exito = false;
                     res.mensaje.Add("La contraseña es requerida.");
                     return res;
                 }
-                else
+
+                bool? exito = false;
+                string hashedPasswordFromDB = null;
+                string nombre = null;
+                int? usuarioId = null;
+
+                using (ConectionDataContext miLinq = new ConectionDataContext())
                 {
-                    bool? exito = false;
-                    string hashedPasswordFromDB = null; // Variable para recibir el hash almacenado
-                    int? usuarioId = null; // Variable para recibir el ID del usuario
+                    miLinq.SP_Iniciar_Sesion(req.Email, ref hashedPasswordFromDB, ref exito, ref usuarioId, ref nombre);
+                }
 
-                    ConectionDataContext miLinq = new ConectionDataContext();
-                    miLinq.SP_Iniciar_Sesion(req.Email, ref hashedPasswordFromDB, ref exito, ref usuarioId);
+                if (exito == true && !string.IsNullOrEmpty(hashedPasswordFromDB))
+                {
 
-                    if (exito == true && !string.IsNullOrEmpty(hashedPasswordFromDB)) // Verificar que el usuario exista y tenga contraseña
+                    if (PasswordHelper.VerificarContraseña(req.Password, hashedPasswordFromDB))
                     {
-                        // Verificar la contraseña ingresada contra el hash de la base de datos
-                        if (PasswordHelper.VerificarContraseña(req.Password, hashedPasswordFromDB))
-                        {
-                            // La contraseña es correcta
-                            res.exito = true;
-                            res.mensaje.Add("Inicio de sesión exitoso.");
-                        }
-                        else
-                        {
-                            res.exito = false;
-                            res.mensaje.Add("Password incorrecto.");
-                        }
+                        res.exito = true;
+                        res.mensaje.Add("Inicio de sesión exitoso.");
+                        res.IDUsuario = usuarioId;
+                        res.nombre = nombre;
+                        res.email = req.Email;
                     }
                     else
                     {
                         res.exito = false;
-                        res.mensaje.Add("Email incorrecto.");
+                        res.mensaje.Add("Contraseña incorrecta.");
                     }
+                }
+                else
+                {
+                    res.exito = false;
+                    res.mensaje.Add("Correo electrónico incorrecto.");
                 }
             }
             catch (Exception ex)
             {
                 res.exito = false;
                 res.mensaje.Add("Ocurrió un error en el inicio de sesión.");
+                res.mensaje.Add($"Detalle del error: {ex.Message}");
+            }
+
+            return res;
+
+        }
+
+        public async Task<ResEscanearCodigo> ObtenerHistorialEscaneos(int usuarioID)
+        {
+            ResEscanearCodigo res = new ResEscanearCodigo();
+
+            try
+            {
+                using (ConectionDataContext miLinq = new ConectionDataContext())
+                {
+                    var historialEscaneos = miLinq.SP_ObtenerHistorialEscaneos(usuarioID).ToList();
+
+                    if (historialEscaneos.Any())
+                    {
+                        res.exito = true;
+
+                        foreach (var item in historialEscaneos)
+                        {
+                            var historial = new CodigoBarras
+                            {
+                                Codigo_Barras = item.Codigo_Barras,
+                                Nombre = item.Nombre,
+                                Categoria = item.Categoria,
+                                Marca = item.Marca,
+                                Informacion_Nutricional = item.Informacion_Nutricional,
+                                nutri_score = item.nutri_score,
+                                Ingredientes = item.Ingredientes,
+                                Fecha_Escaneo = item.Fecha_Escaneo,
+                                Imagen = item.Imagen,
+                                alergenos = DetectarAlergias(usuarioID, item.Ingredientes),
+                                productoID = item.Producto_ID
+
+                            };
+                            res.codigoBarras.Add(historial);
+                        }
+                    }
+                    else
+                    {
+                        res.exito = false;
+                        res.mensaje.Add("No se encontro historial de escaneos para este usuario.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res.exito = false;
+
+                res.mensaje.Add($"Error al obtener el historial de escaneos: {ex.Message}");
+
+                Console.WriteLine(ex.ToString());
+
             }
 
             return res;
@@ -390,6 +452,45 @@ namespace backEnd.Logica
             }
 
             return res;
+        }
+
+
+        public List<string> DetectarAlergias(int userID, string ingredientes)
+        {
+            var alergiasDetectadas = new List<string>();
+
+            if (string.IsNullOrEmpty(ingredientes))
+                return alergiasDetectadas; // Si no hay ingredientes, devuelve una lista vacía
+
+            // Convertir los ingredientes a minúsculas para garantizar insensibilidad a mayúsculas
+            ingredientes = ingredientes.ToLowerInvariant();
+
+            using (var context = new ConectionDataContext())
+            {
+                // Obtener las alergias del usuario
+                var alergiasUsuario = context.SP_Consultar_Usuario_Alergias(userID);
+
+                foreach (var alergia in alergiasUsuario)
+                {
+                    // Dividir las palabras clave por comas
+                    var palabrasClave = alergia.Palabras_Clave.Split(',');
+
+                    foreach (var palabraClave in palabrasClave)
+                    {
+                        // Limpiar espacios en blanco y convertir a minúsculas
+                        var palabra = palabraClave.Trim().ToLowerInvariant();
+
+                        // Verificar si la palabra clave está en los ingredientes
+                        if (!string.IsNullOrEmpty(palabra) && ingredientes.Contains(palabra))
+                        {
+                            alergiasDetectadas.Add(alergia.Nombre); // Agregar el nombre de la alergia detectada
+                            break; // Detener la búsqueda para esta alergia si se encuentra una palabra clave
+                        }
+                    }
+                }
+            }
+
+            return alergiasDetectadas;
         }
     }
 }

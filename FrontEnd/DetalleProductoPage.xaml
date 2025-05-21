@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.DetalleProductoPage"
+             BackgroundColor="White">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+
+            <Image x:Name="imgProducto"
+                   HeightRequest="200"
+                   WidthRequest="200"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Center"/>
+            
+            <Frame BackgroundColor="#F0F0F0" CornerRadius="10" Padding="15">
+                
+                <VerticalStackLayout>
+                    <Label x:Name="lblNombre" 
+                           FontSize="24" 
+                           FontAttributes="Bold" 
+                           HorizontalOptions="Center"/>
+
+                    <Label x:Name="lblMarca" 
+                           FontSize="18" 
+                           TextColor="Gray" 
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <VerticalStackLayout Spacing="10">
+
+                <Image x:Name="imgNutriScore" 
+                       HeightRequest="200" 
+                       WidthRequest="300" 
+                       Aspect="AspectFit" 
+                       HorizontalOptions="Center"/>
+
+                <Label Text="Alergenos" 
+                       FontAttributes="Bold" 
+                       FontSize="20"/>
+
+                <Label x:Name="lblAlergenos" 
+                       FontSize="20" 
+                       HorizontalOptions="Start" 
+                       Margin="0,10,0,0"/>
+
+                <Label Text="Información Nutricional" 
+                       FontAttributes="Bold" 
+                       FontSize="20"/>
+
+                <Label x:Name="lblInfoNutricional" 
+                       TextColor="Black"
+                       FontSize="14"
+                       LineBreakMode="WordWrap"/>
+
+                <Label Text="Ingredientes" 
+                       FontAttributes="Bold" 
+                       FontSize="20"/>
+
+                <Label x:Name="lblIngredientes" 
+                       TextColor="Black"
+                       FontSize="17"/>
+
+                <Label Text="Código de Barras" 
+                       FontAttributes="Bold" 
+                       FontSize="20"/>
+
+                <Label x:Name="lblCodigoBarras" 
+                       TextColor="Black"/>
+
+                <!-- Espacio para el feedback de usuarios -->
+                <Frame BorderColor="LightGray"
+                           BackgroundColor="White"
+                           CornerRadius="10"
+                           Padding="15">
+                    <StackLayout>
+                        <!-- Titulo o texto estático -->
+                        <Label Text="Comentarios de usuarios"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Start" />
+
+                        <!-- StackLayout para los comentarios -->
+                        <StackLayout x:Name="StackComentarios">
+                            <!-- Los comentarios se agregarán dinámicamente aquí -->
+                        </StackLayout>
+
+                        <!-- Mensaje si no hay comentarios -->
+                        <Label x:Name="lblNoComentarios"
+                               Text="Sé el primero en dar un feedback"
+                               TextColor="Gray"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               IsVisible="False" />
+                    </StackLayout>
+                </Frame>
+
+
+
+                <!-- Espacio para calificar el producto-->
+                <Frame BorderColor="LightGray"
+                       BackgroundColor="White"
+                       CornerRadius="10"
+                       Padding="15">
+
+                    <VerticalStackLayout Spacing="10">
+
+                        <Label Text="¡Danos tu opinión!"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="#18a6bf"/>
+
+                        <Label Text="Dejar comentario:"
+                           FontSize="16"
+                           TextColor="#333"/>
+
+                        <Editor x:Name="txtFeedback"
+                            Placeholder="Escribe tu feedback aquí..."
+                            BackgroundColor="#F0F0F0"
+                            HeightRequest="70"
+                            TextColor="Black"/>
+
+                        <Label Text="Califica el producto:"
+                           FontSize="16"
+                           TextColor="#333"/>
+
+                        <HorizontalStackLayout Spacing="10" 
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Center">
+
+                            <ImageButton x:Name="star1"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+
+                            <ImageButton x:Name="star2"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+
+                            <ImageButton x:Name="star3"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+
+                            <ImageButton x:Name="star4"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+
+                            <ImageButton x:Name="star5"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+                        </HorizontalStackLayout>
+
+
+                        <Button Text="Enviar Feedback"
+                            BackgroundColor="#7de048"
+                            TextColor="White"
+                            FontSize="16"
+                            CornerRadius="8"
+                            Clicked="OnEnviarFeedbackClicked"
+                            HorizontalOptions="Center"
+                            WidthRequest="200"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
