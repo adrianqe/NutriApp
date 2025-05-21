@@ -21,7 +21,6 @@ El proyecto se divide en varias capas para mejorar la organización y la escalab
 - **API y Servicios Externos:** Comunicación con servicios externos como OpenFoodFacts para obtener información adicional de los productos.
 - **Interfaz de Usuario (Frontend):** A desarrollar usando MAUI para iOS y Android.
 
-## Instalación
 ### Requisitos
 - **Visual Studio** con soporte para MAUI (desarrollo móvil).
 - **SQL Server** para la base de datos.
