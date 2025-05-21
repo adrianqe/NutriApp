@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.ProductoEscaneado"
+             Title="Producto Escaneado"
+             Background="White">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Indicador de carga -->
+        <VerticalStackLayout Grid.Row="0" Padding="15">
+            <ActivityIndicator x:Name="LoadingIndicator" 
+                               IsRunning="False" 
+                               IsVisible="False" 
+                               Color="Blue" 
+                               HorizontalOptions="Center"/>
+
+            <Label x:Name="StatusLabel" 
+                   IsVisible="False" 
+                   FontSize="Medium" 
+                   TextColor="Gray" 
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Contenido principal -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="15" Padding="20">
+                <!-- Información básica del producto -->
+                <Frame BorderColor="LightGray" 
+                       BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="15">
+
+                    <Image x:Name="imgProducto"
+                           Aspect="AspectFit"
+                           Source="default_product_image.png" 
+                           HeightRequest="300"
+                           WidthRequest="300"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Frame>
+                <Frame BorderColor="LightGray" 
+                       BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="15">
+                    <VerticalStackLayout Spacing="10">
+
+                        <Label x:Name="lblNombreProducto" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center"/>
+
+                        <Label x:Name="lblMarcaProducto" 
+                               FontSize="16" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center"/>
+
+                        <Label x:Name="lblCategoria" 
+                               FontSize="14" 
+                               TextColor="Gray" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Nutri-Score -->
+                <Frame BorderColor="LightGray" 
+                       BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Image x:Name="imgNutriScore" 
+                               HeightRequest="200" 
+                               WidthRequest="300" 
+                               Aspect="AspectFit" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Ingredientes -->
+                <Frame BorderColor="LightGray" 
+                       BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Ingredientes" 
+                               FontSize="18" 
+                               FontAttributes="Bold"/>
+
+                        <Label x:Name="lblIngredientes" 
+                               FontSize="14"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Alergenos -->
+                <Frame BorderColor="LightGray" 
+                       BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Alergenos" 
+                               FontSize="18" 
+                               FontAttributes="Bold"/>
+
+                        <Label x:Name="lblAlergenos" 
+                               FontSize="14"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Información Nutricional -->
+                <Frame BorderColor="LightGray" 
+                       BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Información Nutricional" 
+                               FontSize="18" 
+                               FontAttributes="Bold"/>
+
+                        <Label x:Name="lblInformacionNutricional" 
+                               FontSize="14"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Código de Barras -->
+                <Frame BorderColor="LightGray" 
+                       BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="15">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Código de Barras" 
+                               FontSize="18" 
+                               FontAttributes="Bold"/>
+
+                        <Label x:Name="lblCodigoEnviado" 
+                               FontSize="14"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Espacio para el feedback de usuarios -->
+                <Frame BorderColor="LightGray"
+                           BackgroundColor="White"
+                           CornerRadius="10"
+                           Padding="15">
+                    <StackLayout>
+                        <!-- Titulo o texto estático -->
+                        <Label Text="Comentarios de usuarios"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Start" />
+
+                        <!-- StackLayout para los comentarios -->
+                        <StackLayout x:Name="StackComentarios">
+                            <!-- Los comentarios se agregarán dinámicamente aquí -->
+                        </StackLayout>
+
+                        <!-- Mensaje si no hay comentarios -->
+                        <Label x:Name="lblNoComentarios"
+                               Text="Sé el primero en dar un feedback"
+                               TextColor="Gray"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               IsVisible="False" />
+                    </StackLayout>
+                </Frame>
+
+
+
+                <!-- Espacio para calificar el producto-->
+                    <Frame BorderColor="LightGray"
+                       BackgroundColor="White"
+                       CornerRadius="10"
+                       Padding="15">
+                    
+                    <VerticalStackLayout Spacing="10">
+                        
+                        <Label Text="¡Danos tu opinión!"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           TextColor="#18a6bf"/>
+
+                        <Label Text="Dejar comentario:"
+                           FontSize="16"
+                           TextColor="#333"/>
+
+                        <Editor x:Name="txtFeedback"
+                            Placeholder="Escribe tu feedback aquí..."
+                            BackgroundColor="#F0F0F0"
+                            HeightRequest="70"
+                            TextColor="Black"/>
+
+                        <Label Text="Califica el producto:"
+                           FontSize="16"
+                           TextColor="#333"/>
+
+                        <HorizontalStackLayout Spacing="10" 
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Center">
+
+                            <ImageButton x:Name="star1"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+
+                            <ImageButton x:Name="star2"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+
+                            <ImageButton x:Name="star3"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+
+                            <ImageButton x:Name="star4"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+
+                            <ImageButton x:Name="star5"
+                                    Source="star_empty.png"
+                                    Clicked="OnStarClicked"
+                                    WidthRequest="40" HeightRequest="40" />
+                        </HorizontalStackLayout>
+
+
+                        <Button Text="Enviar Feedback"
+                            BackgroundColor="#7de048"
+                            TextColor="White"
+                            FontSize="16"
+                            CornerRadius="8"
+                            Clicked="OnEnviarFeedbackClicked"
+                            HorizontalOptions="Center"
+                            WidthRequest="200"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

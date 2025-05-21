@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.AlergiaPage"
+             BackgroundColor="White">
+
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto,*,Auto"
+        RowSpacing="20">
+        <Label
+            Grid.Row="0"
+            FontAttributes="Bold"
+            FontSize="24"
+            HorizontalOptions="Center"
+            Text="Selecciona tus Alergenos"
+            TextColor="#6a462f" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="15">
+                <Label
+                    FontSize="14"
+                    HorizontalOptions="Center"
+                    Text="Puedes seleccionar uno o varios alergenos"
+                    TextColor="#18a6bf" />
+
+                <Frame
+                    Padding="15"
+                    BackgroundColor="White"
+                    BorderColor="#7de048"
+                    CornerRadius="15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox
+                            x:Name="Gluten"
+                            BindingContext="Gluten"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            CheckedChanged="OnAllergenCheckedChanged"
+                            ClassId="Gluten"
+                            Scale="1.1"
+                            Color="#18a6bf" />
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Text="Gluten"
+                            TextColor="#6a462f"
+                            VerticalOptions="Center" />
+
+                        <CheckBox
+                            x:Name="Lactosa"
+                            BindingContext="Lactosa"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            CheckedChanged="OnAllergenCheckedChanged"
+                            ClassId="Lactosa"
+                            Scale="1.1"
+                            Color="#18a6bf" />
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Text="Lactosa"
+                            TextColor="#6a462f"
+                            VerticalOptions="Center" />
+
+                        <CheckBox
+                            x:Name="Nueces"
+                            BindingContext="Nueces"
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            CheckedChanged="OnAllergenCheckedChanged"
+                            ClassId="Nueces"
+                            Scale="1.1"
+                            Color="#18a6bf" />
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Text="Nueces"
+                            TextColor="#6a462f"
+                            VerticalOptions="Center" />
+
+                        <CheckBox
+                            x:Name="Huevos"
+                            BindingContext="Huevos"
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            CheckedChanged="OnAllergenCheckedChanged"
+                            ClassId="Huevos"
+                            Scale="1.1"
+                            Color="#18a6bf" />
+                        <Label
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Text="Huevos"
+                            TextColor="#6a462f"
+                            VerticalOptions="Center" />
+
+                        <CheckBox
+                            x:Name="Soja"
+                            BindingContext="Soja"
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            CheckedChanged="OnAllergenCheckedChanged"
+                            ClassId="Soja"
+                            Scale="1.1"
+                            Color="#18a6bf" />
+                        <Label
+                            Grid.Row="4"
+                            Grid.Column="0"
+                            Text="Soja"
+                            TextColor="#6a462f"
+                            VerticalOptions="Center" />
+
+                        <CheckBox
+                            x:Name="Pescado"
+                            BindingContext="Pescado"
+                            Grid.Row="5"
+                            Grid.Column="1"
+                            CheckedChanged="OnAllergenCheckedChanged"
+                            ClassId="Pescado"
+                            Scale="1.1"
+                            Color="#18a6bf" />
+                        <Label
+                            Grid.Row="5"
+                            Grid.Column="0"
+                            Text="Pescado"
+                            TextColor="#6a462f"
+                            VerticalOptions="Center" />
+
+                        <CheckBox
+                            x:Name="Mariscos"
+                            BindingContext="Mariscos"
+                            Grid.Row="6"
+                            Grid.Column="1"
+                            CheckedChanged="OnAllergenCheckedChanged"
+                            ClassId="Mariscos"
+                            Scale="1.1"
+                            Color="#18a6bf" />
+                        <Label
+                            Grid.Row="6"
+                            Grid.Column="0"
+                            Text="Mariscos"
+                            TextColor="#6a462f"
+                            VerticalOptions="Center" />
+
+                        <CheckBox
+                            x:Name="Cacahuates"
+                            BindingContext="Cacahuates"
+                            Grid.Row="7"
+                            Grid.Column="1"
+                            CheckedChanged="OnAllergenCheckedChanged"
+                            ClassId="Cacahuates"
+                            Scale="1.1"
+                            Color="#18a6bf" />
+                        <Label
+                            Grid.Row="7"
+                            Grid.Column="0"
+                            Text="Cacahuates"
+                            TextColor="#6a462f"
+                            VerticalOptions="Center" />
+                    </Grid>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button
+            Grid.Row="2"
+            Margin="20,0"
+            BackgroundColor="#6a462f"
+            Clicked="OnGuardarAlergias"
+            CornerRadius="15"
+            FontSize="18"
+            Text="Guardar Alergias"
+            TextColor="White" />
+    </Grid>
+</ContentPage>

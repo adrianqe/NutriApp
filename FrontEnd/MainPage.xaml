@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- Imagen de introducción -->
+            <Image Source="intronutria.png"
+               Aspect="AspectFit"
+               HorizontalOptions="Center"
+               VerticalOptions="Start" />
+
+            <!-- Título y subtítulo -->
+            <Label
+            Text="Bienvenido a NutriApp"
+            FontSize="30"
+            FontAttributes="Bold"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            TextColor="#4A4A4A" />
+
+            <Label
+            Text="Iniciemos!"
+            FontSize="20"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            TextColor="#7A7A7A" />
+
+            <!-- Botones en paralelo -->
+            <HorizontalStackLayout Spacing="15" HorizontalOptions="Center" Margin="0,20,0,0">
+                <Button
+                Text="Iniciar Sesión"
+                Padding="14"
+                WidthRequest="125"
+                BackgroundColor="#7de048"
+                TextColor="White"
+                CornerRadius="8"
+                Command="{Binding LoginCommand}"
+                Clicked="btnIniciarSesion_Clicked" />
+
+                <Button
+                Text="Registrate"
+                Padding="14"
+                WidthRequest="125"
+                BackgroundColor="#18a6bf"
+                TextColor="White"
+                CornerRadius="8"
+                Command="{Binding LoginCommand}"
+                Clicked="btnRegistrar_Clicked" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.VerificacionPage"
+             Title="Verificación de email">
+    <VerticalStackLayout
+         Padding="20"
+         Spacing="20"
+        VerticalOptions="Center">
+        <!-- Imagen de verificación -->
+        <Image Source="verificarnutri.png"
+            Aspect="AspectFit"
+            HorizontalOptions="Center"
+            VerticalOptions="Start" />
+
+        <Label
+             FontAttributes="Bold"
+             FontSize="40"
+             HorizontalOptions="Center"
+             Text="Verificación" />
+        <Label
+             FontAttributes="Bold"
+             FontSize="20"
+             HorizontalOptions="CenterAndExpand"
+             VerticalOptions="Center"
+             x:Name="lblPin"/>
+        <Label
+             FontSize="17"
+             HorizontalOptions="Center"
+             HorizontalTextAlignment="Center"
+             Text="Se ha enviado un pin de 4 dígitos al correo, ingresa el pin para continuar"
+             TextColor="Gray" />
+
+        <!-- PIN de verificacion -->
+        <Entry
+             FontSize="30"
+             x:Name="txtPin"
+             WidthRequest="150"
+             HeightRequest="60"
+             HorizontalOptions="Center"
+             Placeholder="* * * *"
+             Text="{Binding Pin}"
+             TextColor="#333333"
+             Keyboard="Numeric"
+             HorizontalTextAlignment="Center"
+             VerticalOptions="Center" />
+        <!-- Boton de verificación -->
+        <Button
+             Padding="14"
+             WidthRequest="125"
+             Background="#7de048"
+             Command="{Binding VerifyCommand}"
+             CornerRadius="8"
+             Text="Continuar"
+             TextColor="White"
+             HorizontalOptions="FillAndExpand"
+             VerticalOptions="End"
+             Clicked="btnVerificar_Clicked"/>
+    </VerticalStackLayout>
+</ContentPage>

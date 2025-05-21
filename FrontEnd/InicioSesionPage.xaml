@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.InicioSesionPage">
+    <ScrollView>
+        <VerticalStackLayout Padding="20">
+            <!-- Imagen de Bienvenida -->
+            <Image Source="inicionutria.png"
+                Aspect="AspectFit"
+                HorizontalOptions="Center"
+                VerticalOptions="Start" />
+
+            <!-- Título de bienvenida -->
+            <Label
+             Text="Bienvenido,"
+             FontAttributes="Bold"
+             FontSize="28"
+             HorizontalOptions="Center"
+             VerticalOptions="Center"
+             TextColor="#333333" />
+
+            <!-- Subtítulo -->
+            <Label
+             Text="Inicia sesión para continuar"
+             FontSize="20"
+             FontAttributes="Bold"
+             HorizontalOptions="Center"
+             VerticalOptions="Center"
+             TextColor="#4A4A4A" />
+
+            <!-- Formulario de ingreso de Email y Contraseña -->
+            <VerticalStackLayout Margin="0,20,0,0" Spacing="20">
+                <!-- Campo de Email -->
+                <VerticalStackLayout>
+                    <Label
+                     Text="Email"
+                     FontSize="14"
+                     HorizontalOptions="Start"
+                     TextColor="#18a6bf" />
+                    <Entry
+                     Placeholder="Ingrese su Email"
+                     x:Name="txtEmail"
+                     FontSize="18"
+                     Text="{Binding Email}"
+                     Keyboard="Email"
+                     Margin="0,5,0,0" />
+                </VerticalStackLayout>
+
+                <!-- Campo de Contraseña -->
+                <VerticalStackLayout>
+                    <Label
+                     Text="Contraseña"
+                     FontSize="14"
+                     HorizontalOptions="Start"
+                     TextColor="#18a6bf" />
+                    <Entry
+                     Placeholder="Ingrese su Contraseña"
+                     x:Name="txtPassword"
+                     FontSize="18"
+                     IsPassword="True"
+                     Text="{Binding Password}"
+                     Margin="0,5,0,0" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- Botón de Iniciar Sesión -->
+            <Button
+             Text="Iniciar Sesión"
+             Command="{Binding LoginCommand}"
+             Padding="14"
+             WidthRequest="200"
+             FontSize="16"
+             TextColor="White"
+             BackgroundColor="#7de048"
+             CornerRadius="8"
+             Margin="0,30,0,0"
+             HorizontalOptions="Center"
+             Clicked="btnIniciarSesion_Clicked"/>
+
+            <!-- Texto y Botón de Regístrate -->
+            <VerticalStackLayout Spacing="5" HorizontalOptions="Center" Margin="0,20,0,0">
+                <Label
+                 Text="¿No tienes una cuenta?"
+                 FontSize="16"
+                 HorizontalOptions="Center"
+                 TextColor="Gray" />
+                <Button
+                 Text="Regístrate"
+                 Command="{Binding RegisterCommand}"
+                 FontAttributes="Bold"
+                 FontSize="16"
+                 TextColor="#7de048"
+                 BackgroundColor="Transparent"
+                 HorizontalOptions="Center"
+                 Clicked="btnRegistro_Clicked"/>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

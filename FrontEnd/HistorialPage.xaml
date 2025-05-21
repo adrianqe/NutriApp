@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.HistorialPage"
+             Title="Historial"
+             Background="White">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Encabezado -->
+        <VerticalStackLayout Grid.Row="0" Padding="15">
+            <Label Text="Historial de Escaneos" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"/>
+            <Label Text="Productos que has escaneado recientemente" 
+                   TextColor="Gray" 
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- ListView para mostrar el historial de productos -->
+        <ListView x:Name="listHistorialProductos" 
+                  Grid.Row="1"
+                  ItemsSource="{Binding ProductosHistorial}"
+                  HasUnevenRows="True"
+                  SeparatorVisibility="Default"
+                  ItemSelected="OnProductoHistorialSeleccionado">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Icono o imagen del producto (opcional) -->
+                            <Image Source="{Binding ImagenProducto}" 
+                                   Grid.Column="0"
+                                   HeightRequest="60" 
+                                   WidthRequest="60"
+                                   Aspect="AspectFit"/>
+
+                            <!-- Información del producto -->
+                            <VerticalStackLayout Grid.Column="1" Padding="10,0">
+                                <Label Text="{Binding Nombre}" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"/>
+                                <Label Text="{Binding Marca}" 
+                                       TextColor="Gray" 
+                                       FontSize="14"/>
+                                <Label Text="{Binding FechaEscaneo, StringFormat='Escaneado el: {0:dd/MM/yyyy HH:mm}'}" 
+                                       TextColor="Gray" 
+                                       FontSize="12"/>
+                            </VerticalStackLayout>
+
+                            <!-- Ícono de más información o acción -->
+                            <Image Source="info_icon.png" 
+                                   Grid.Column="2"
+                                   HeightRequest="30" 
+                                   WidthRequest="30"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <VerticalStackLayout Grid.Row="1" Padding="15">
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
+                               Color="Blue"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               HeightRequest="50"
+                               WidthRequest="50"/>
+
+            <Label Text="Consultando Historial..."
+                   IsVisible="{Binding IsHistorialVacio}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   TextColor="Gray"
+                   x:Name="txtHistorial"
+                   Padding="20"/>
+        </VerticalStackLayout>
+
+        <!-- Pie de página o acciones adicionales -->
+        <HorizontalStackLayout Grid.Row="2" 
+                                Padding="15" 
+                                HorizontalOptions="Center">
+            <Button Text="Limpiar Historial" 
+                    Clicked="OnLimpiarHistorialClicked"
+                    Style="{StaticResource SecondaryButton}"/>
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

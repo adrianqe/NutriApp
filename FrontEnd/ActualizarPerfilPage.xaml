@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.ActualizarPerfilPage"
+             Title="Actualizar Perfil"
+             BackgroundColor="#f5f5f5">
+
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <!-- Profile Picture Selection -->
+            <Grid HorizontalOptions="Center">
+                <Frame x:Name="frmPerfil"
+                       HeightRequest="200" 
+                       WidthRequest="200" 
+                       CornerRadius="100" 
+                       Padding="0"
+                       IsClippedToBounds="True"
+                       BorderColor="Transparent"
+                       HorizontalOptions="Center">
+                    <Image x:Name="imgPerfil" 
+                           Source="perfil.png" 
+                           Aspect="AspectFill"/>
+                </Frame>
+
+                <Button x:Name="btnCambiarFoto"
+                        Text="Cambiar Foto"
+                        Clicked="OnCambiarFotoClicked"
+                        BackgroundColor="#18a6bf"
+                        TextColor="White"
+                        CornerRadius="10"
+                        HorizontalOptions="Center"
+                        VerticalOptions="End"
+                        Margin="0,0,0,-10"/>
+            </Grid>
+
+            <Frame
+                Padding="15"
+                BackgroundColor="#18a6bf"
+                CornerRadius="15"
+                HasShadow="True">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="28"
+                    HorizontalOptions="Center"
+                    Text="Actualizar Perfil"
+                    TextColor="White" />
+            </Frame>
+
+            <Frame
+                Padding="10"
+                BorderColor="#6a462f"
+                CornerRadius="10">
+                <Entry
+                    x:Name="txtNombre"
+                    FontSize="16"
+                    Placeholder="Nombre"
+                    PlaceholderColor="#6a462f"
+                    TextColor="Black" />
+            </Frame>
+
+            <Frame
+                Padding="10"
+                BorderColor="#6a462f"
+                CornerRadius="10">
+                <Entry
+                    x:Name="txtCorreo"
+                    FontSize="16"
+                    Keyboard="Email"
+                    Placeholder="Correo Electrónico"
+                    PlaceholderColor="#6a462f"
+                    TextColor="Black" />
+            </Frame>
+
+            <Frame
+                Padding="10"
+                BorderColor="#6a462f"
+                CornerRadius="10">
+                <Entry
+                    x:Name="txtContrasena"
+                    FontSize="16"
+                    IsPassword="True"
+                    Placeholder="Contraseña"
+                    PlaceholderColor="#6a462f"
+                    TextColor="Black" />
+            </Frame>
+
+            <Frame
+                Padding="10"
+                BorderColor="#6a462f"
+                CornerRadius="10">
+                <Entry
+                    x:Name="txtConfirmarContrasena"
+                    FontSize="16"
+                    IsPassword="True"
+                    Placeholder="Confirmar Contraseña"
+                    PlaceholderColor="#6a462f"
+                    TextColor="Black" />
+            </Frame>
+
+            <Button
+                x:Name="btnActualizar"
+                Margin="0,30,0,0"
+                BackgroundColor="#7de048"
+                Clicked="btnActualizar_Clicked"
+                CornerRadius="15"
+                FontSize="18"
+                Text="Actualizar"
+                TextColor="White" />
+
+            <Button
+                x:Name="btnCancelar"
+                BackgroundColor="#6a462f"
+                Clicked="OnBackButtonClicked"
+                CornerRadius="15"
+                FontSize="18"
+                Text="Cancelar"
+                TextColor="White" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

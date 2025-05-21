@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NutriApp.Perfil"
+             Title="Perfil de Usuario"
+             BackgroundColor="#F0F0F0">
+    <ScrollView HorizontalOptions="Center" VerticalOptions="Center">
+        <VerticalStackLayout
+        Padding="20"
+        HorizontalOptions="Center"
+        VerticalOptions="Center">
+            <Frame
+            Padding="20"
+            BackgroundColor="White"
+            CornerRadius="20"
+            HasShadow="True"
+            HorizontalOptions="Center"
+            WidthRequest="300">
+                <VerticalStackLayout
+                Padding="10"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Spacing="20">
+                    <!--  Imagen de Perfil  -->
+                    <Frame x:Name="frmPerfil"
+                           HeightRequest="200" 
+                           WidthRequest="200" 
+                           CornerRadius="100" 
+                           Padding="0"
+                           IsClippedToBounds="True"
+                           BorderColor="Transparent"
+                           HorizontalOptions="Center">
+                        <Image
+                        x:Name="imgPerfil"
+                        Aspect="AspectFill"
+                        Source="perfil.png"/>
+                    </Frame>
+
+                    <!--  Nombre del Usuario  -->
+                    <Label
+                    x:Name="lblNombreUsuario"
+                    FontSize="24"
+                    HorizontalOptions="Center"
+                    Text="Cargando..."
+                    TextColor="Black" />
+
+                    <!--  Botones de Acciones  -->
+                    <VerticalStackLayout Spacing="15">
+                        <Button
+                        BackgroundColor="#7de048"
+                        BorderColor="#6a462f"
+                        BorderWidth="2"
+                        Clicked="OnAlergiaButtonClicked"
+                        CornerRadius="10"
+                        Text="Alergias"
+                        TextColor="White" />
+                        <Button
+                        BackgroundColor="#18a6bf"
+                        BorderColor="#6a462f"
+                        BorderWidth="2"
+                        Clicked="OnEditarPerfilButtonClicked"
+                        CornerRadius="10"
+                        Text="Editar Perfil"
+                        TextColor="White" />
+                        <Button
+                        BackgroundColor="#6a462f"
+                        BorderColor="#6a462f"
+                        BorderWidth="2"
+                        Clicked="OnEliminarPerfilButtonClicked"
+                        CornerRadius="10"
+                        Text="Eliminar Perfil"
+                        TextColor="White" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
